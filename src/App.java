@@ -10,6 +10,7 @@ public class App {
 
         graph.addEdge("A", "B", 1);
         graph.addEdge("B", "A", 2);
+        graph.addEdge("C", "D", 3);
 
         System.out.println(graph.isNeighbor("A", "B"));
         System.out.println(graph.isNeighbor("B", "A"));

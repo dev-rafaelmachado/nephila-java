@@ -23,7 +23,7 @@ public class AdjacencyList implements IGraph {
                 return node;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Node not found");
     }
 
     public void addNode(String label) {
@@ -31,50 +31,75 @@ public class AdjacencyList implements IGraph {
     }
 
     public void addEdge(String from, String to, int weight) {
-        Node fromNode = getNode(from);
-        Node toNode = getNode(to);
-        int itWeight = isWeighted ? weight : 1;
-        if (fromNode != null && toNode != null) {
-            fromNode.addNeighbor(toNode, itWeight);
-            if(!isDirected) {
-                toNode.addNeighbor(fromNode, itWeight);
+        try {
+            Node fromNode = getNode(from);
+            Node toNode = getNode(to);
+            int itWeight = isWeighted ? weight : 1;
+            if (fromNode != null && toNode != null) {
+                fromNode.addNeighbor(toNode, itWeight);
+                if(!isDirected) {
+                    toNode.addNeighbor(fromNode, itWeight);
+                }
             }
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
     public void removeNode(String label) {
-        Node node = getNode(label);
-        if (node != null) {
-            nodes.remove(node);
-            for (Node n : nodes) {
-                n.removeNeighbor(node);
+        try {
+            Node node = getNode(label);
+            if (node != null) {
+                nodes.remove(node);
+                for (Node n : nodes) {
+                    n.removeNeighbor(node);
+                }
             }
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
     public void removeEdge(String from, String to) {
-        Node fromNode = getNode(from);
-        Node toNode = getNode(to);
-        if (fromNode != null && toNode != null) {
-            fromNode.removeNeighbor(toNode);
+        try {
+            Node fromNode = getNode(from);
+            Node toNode = getNode(to);
+            if (fromNode != null && toNode != null) {
+                fromNode.removeNeighbor(toNode);
+                if(!isDirected) {
+                    toNode.removeNeighbor(fromNode);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
     public boolean isNeighbor(String from, String to) {
-        Node fromNode = getNode(from);
-        Node toNode = getNode(to);
-        if (fromNode != null && toNode != null) {
-            return fromNode.isNeighbor(toNode);
+        try {
+            Node fromNode = getNode(from);
+            Node toNode = getNode(to);
+            if (fromNode != null && toNode != null) {
+                return fromNode.isNeighbor(toNode);
+            }
+            return false;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
         }
-        return false;
     }
 
     public List<Edge> getNeighbors(String label) {
-        Node node = getNode(label);
-        if (node != null) {
-            return node.getNeighbors();
+        try {
+            Node node = getNode(label);
+            if (node != null) {
+                return node.getNeighbors();
+            }
+            return null;
+        } catch (Exception e) {
+            System.out.println(e);
+            return null;
         }
-        return null;
     }
 
 
