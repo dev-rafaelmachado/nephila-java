@@ -25,6 +25,15 @@ public class Node implements INode {
         neighbors.add(new Edge(node, weight));
     }
 
+    public void updateNeighbor(Node node, int weight) {
+        for (Edge edge : neighbors) {
+            if (edge.getNode().equals(node)) {
+                edge.setWeight(weight);
+                break;
+            }
+        }
+    }
+
     public void removeNeighbor(Node node) {
         for (Edge edge : neighbors) {
             if (edge.getNode().equals(node)) {

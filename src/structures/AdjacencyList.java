@@ -1,106 +1,173 @@
 package structures;
 
+import interfaces.IGraph;
 import java.util.ArrayList;
 import java.util.List;
-import interfaces.IGraph;
 import share.Edge;
 import share.Node;
 
 public class AdjacencyList implements IGraph {
-    private List<Node> nodes; 
-    private boolean isWeighted;
-    private boolean isDirected;
 
-    public AdjacencyList(boolean isWeighted, boolean isDirected) {
-        nodes = new ArrayList<>();
-        this.isWeighted = isWeighted;
-        this.isDirected = isDirected;
+  private List<Node> nodes;
+  private boolean isWeighted;
+  private boolean isDirected;
+
+  public AdjacencyList(boolean isWeighted, boolean isDirected) {
+    nodes = new ArrayList<>();
+    this.isWeighted = isWeighted;
+    this.isDirected = isDirected;
+  }
+
+  private Node getNode(String label) {
+    for (Node node : nodes) {
+      if (node.getLabel().equals(label)) {
+        return node;
+      }
     }
+    throw new IllegalArgumentException("Node " + label + " not found");
+  }
 
-    private Node getNode(String label) {
-        for (Node node : nodes) {
-            if (node.getLabel().equals(label)) {
-                return node;
-            }
+  private Node hasNode(String label) {
+    for (Node node : nodes) {
+      if (node.getLabel().equals(label)) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+  public void addNode(String label) {
+    boolean exists = hasNode(label) != null;
+    if (!exists) {
+      nodes.add(new Node(label));
+      return;
+    }
+    System.out.println("Node " + label + " already exists");
+  }
+
+  public void addEdge(String from, String to, int weight) {
+    try {
+      Node fromNode = getNode(from);
+      Node toNode = getNode(to);
+      int itWeight = isWeighted ? weight : 1;
+      if (fromNode != null && toNode != null) {
+        fromNode.addNeighbor(toNode, itWeight);
+        if (!isDirected) {
+          toNode.addNeighbor(fromNode, itWeight);
         }
-        throw new IllegalArgumentException("Node not found");
+      }
+    } catch (Exception e) {
+      System.out.println(e);
     }
+  }
 
-    public void addNode(String label) {
-        nodes.add(new Node(label));
-    }
-
-    public void addEdge(String from, String to, int weight) {
-        try {
-            Node fromNode = getNode(from);
-            Node toNode = getNode(to);
-            int itWeight = isWeighted ? weight : 1;
-            if (fromNode != null && toNode != null) {
-                fromNode.addNeighbor(toNode, itWeight);
-                if(!isDirected) {
-                    toNode.addNeighbor(fromNode, itWeight);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e);
+  public void removeNode(String label) {
+    try {
+      Node node = getNode(label);
+      if (node != null) {
+        nodes.remove(node);
+        for (Node n : nodes) {
+          n.removeNeighbor(node);
         }
+      }
+    } catch (Exception e) {
+      System.out.println(e);
     }
+  }
 
-    public void removeNode(String label) {
-        try {
-            Node node = getNode(label);
-            if (node != null) {
-                nodes.remove(node);
-                for (Node n : nodes) {
-                    n.removeNeighbor(node);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e);
+  public void removeEdge(String from, String to) {
+    try {
+      Node fromNode = getNode(from);
+      Node toNode = getNode(to);
+      if (fromNode != null && toNode != null) {
+        fromNode.removeNeighbor(toNode);
+        if (!isDirected) {
+          toNode.removeNeighbor(fromNode);
         }
+      }
+    } catch (Exception e) {
+      System.out.println(e);
     }
+  }
 
-    public void removeEdge(String from, String to) {
-        try {
-            Node fromNode = getNode(from);
-            Node toNode = getNode(to);
-            if (fromNode != null && toNode != null) {
-                fromNode.removeNeighbor(toNode);
-                if(!isDirected) {
-                    toNode.removeNeighbor(fromNode);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e);
+  public void updateEdge(String from, String to, int weight) {
+    try {
+      Node fromNode = hasNode(from);
+      Node toNode = hasNode(to);
+      int itWeight = isWeighted ? weight : 1;
+      if (fromNode == null) {
+        addNode(from);
+        fromNode = getNode(from);
+      }
+      if (toNode == null) {
+        addNode(to);
+        toNode = getNode(to);
+      }
+      fromNode.updateNeighbor(toNode, itWeight);
+      if (!isDirected) {
+        toNode.updateNeighbor(fromNode, itWeight);
+      }
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
+
+  public Integer getEdgeWeight(String from, String to) {
+    try {
+      Node fromNode = getNode(from);
+      Node toNode = getNode(to);
+      if (fromNode != null && toNode != null) {
+        for (Edge edge : fromNode.getNeighbors()) {
+          if (edge.getNode().equals(toNode)) {
+            return edge.getWeight();
+          }
         }
+      }
+      return null;
+    } catch (Exception e) {
+      System.out.println(e);
+      return null;
     }
+  }
 
-    public boolean isNeighbor(String from, String to) {
-        try {
-            Node fromNode = getNode(from);
-            Node toNode = getNode(to);
-            if (fromNode != null && toNode != null) {
-                return fromNode.isNeighbor(toNode);
-            }
-            return false;
-        } catch (Exception e) {
-            System.out.println(e);
-            return false;
+  public boolean isNeighbor(String from, String to) {
+    try {
+      Node fromNode = getNode(from);
+      Node toNode = getNode(to);
+      if (fromNode != null && toNode != null) {
+        return fromNode.isNeighbor(toNode);
+      }
+      return false;
+    } catch (Exception e) {
+      System.out.println(e);
+      return false;
+    }
+  }
+
+  public List<Edge> getNeighbors(String label) {
+    try {
+      Node node = getNode(label);
+      if (node != null) {
+        return node.getNeighbors();
+      }
+      return null;
+    } catch (Exception e) {
+      System.out.println(e);
+      return null;
+    }
+  }
+
+  public void printGraph() {
+    for (Node node : nodes) {
+      System.out.print(node.getLabel() + ": ");
+      for (Edge edge : node.getNeighbors()) {
+        System.out.print(edge.getNode().getLabel());
+        if (isWeighted) {
+          System.out.print("(" + edge.getWeight() + ")");
         }
+        System.out.print(", ");
+      }
+      System.out.println();
     }
-
-    public List<Edge> getNeighbors(String label) {
-        try {
-            Node node = getNode(label);
-            if (node != null) {
-                return node.getNeighbors();
-            }
-            return null;
-        } catch (Exception e) {
-            System.out.println(e);
-            return null;
-        }
-    }
-
-
+  }
 }
