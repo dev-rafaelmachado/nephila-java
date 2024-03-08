@@ -1,35 +1,33 @@
 import interfaces.IGraph;
 import share.Graph;
+import structures.AdjacencyList;
+import structures.AdjacencyListTest;
+// import structures.AdjacencyMatrix;
+// import structures.AdjacencyMatrixTest;
 import utils.GraphTypes;
 
 public class App {
 
   public static void main(String[] args) throws Exception {
-    IGraph graph = Graph.createGraph(GraphTypes.MATRIX, true, true);
+    IGraph graph = Graph.createGraph(GraphTypes.LIST, true, true);
 
     if (graph == null) {
       System.out.println("Graph not created");
       return;
     }
 
-    graph.addNode("A");
-    graph.addNode("B");
+    System.out.println("Adjacency List Tests:");
+    AdjacencyListTest testList = new AdjacencyListTest((AdjacencyList) graph);
+    testList.runAll();
+    // graph = Graph.createGraph(GraphTypes.MATRIX, true, true);
 
-    graph.addEdge("A", "B", 1);
-    graph.addEdge("B", "A", 2);
-    graph.addEdge("C", "D", 3);
+    // if (graph == null) {
+    //   System.out.println("Graph not created");
+    //   return;
+    // }
 
-    System.out.println(graph.isNeighbor("A", "B"));
-    System.out.println(graph.isNeighbor("B", "A"));
-
-    System.out.println("-----------------");
-
-    graph.printGraph();
-
-    graph.updateEdge("A", "B", 5);
-
-    System.out.println("-----------------");
-
-    graph.printGraph();
+    // System.out.println("Adjacency Matrix Tests:");
+    // AdjacencyMatrixTest test = new AdjacencyMatrixTest((AdjacencyMatrix) graph);
+    // test.runAll();
   }
 }

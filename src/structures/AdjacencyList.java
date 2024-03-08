@@ -18,6 +18,14 @@ public class AdjacencyList implements IGraph {
     this.isDirected = isDirected;
   }
 
+  protected List<Node> getListNodes() {
+    return nodes;
+  }
+
+  protected void eraseNodes() {
+    nodes = new ArrayList<>();
+  }
+
   private Node getNode(String label) {
     for (Node node : nodes) {
       if (node.getLabel().equals(label)) {
@@ -157,17 +165,56 @@ public class AdjacencyList implements IGraph {
     }
   }
 
-  public void printGraph() {
-    for (Node node : nodes) {
-      System.out.print(node.getLabel() + ": ");
-      for (Edge edge : node.getNeighbors()) {
-        System.out.print(edge.getNode().getLabel());
-        if (isWeighted) {
-          System.out.print("(" + edge.getWeight() + ")");
+  public int getIndegre(String label) {
+    try {
+      Node node = getNode(label);
+      int indegre = 0;
+      for (Node n : nodes) {
+        for (Edge edge : n.getNeighbors()) {
+          if (edge.getNode().equals(node)) {
+            indegre++;
+          }
         }
-        System.out.print(", ");
       }
-      System.out.println();
+      return indegre;
+    } catch (Exception e) {
+      System.out.println(e);
+      return -1;
+    } 
+  }
+
+  public int getOutdegre(String label) {
+    try {
+      Node node = getNode(label);
+      return node.getNeighbors().size();
+    } catch (Exception e) {
+      System.out.println(e);
+      return -1;
     }
+  }
+
+  public int getDegree(String label) {
+    try {
+      return getIndegre(label) + getOutdegre(label);
+    } catch (Exception e) {
+      System.out.println(e);
+      return -1;
+    }
+  }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (Node node : nodes) {
+      sb.append(node.getLabel()).append(": ");
+      for (Edge edge : node.getNeighbors()) {
+        sb.append(edge.getNode().getLabel());
+        if (isWeighted) {
+          sb.append("(").append(edge.getWeight()).append(")");
+        }
+        sb.append(", ");
+      }
+      sb.append("\n");
+    }
+    return sb.toString();
   }
 }

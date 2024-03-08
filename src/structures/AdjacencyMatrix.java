@@ -8,7 +8,7 @@ import share.Node;
 
 public class AdjacencyMatrix implements IGraph {
 
-  private int[][] matrix;
+  private List<List<Integer>> matrix;
   private List<Node> nodes;
   private boolean isWeighted;
   private boolean isDirected;
@@ -17,7 +17,20 @@ public class AdjacencyMatrix implements IGraph {
     this.isWeighted = isWeighted;
     this.isDirected = isDirected;
     nodes = new ArrayList<>();
-    matrix = new int[nodes.size()][nodes.size()];
+    matrix = new ArrayList<>();
+  }
+
+  protected List<Node> getNodes() {
+    return nodes;
+  }
+
+  protected List<List<Integer>> getMatrix() {
+    return matrix;
+  }
+
+  protected void eraseGraph() {
+    nodes = new ArrayList<>();
+    matrix = new ArrayList<>();
   }
 
   private int getNodeIndex(String label) {
@@ -48,6 +61,14 @@ public class AdjacencyMatrix implements IGraph {
     }
     if (!hasNode) {
       nodes.add(new Node(label));
+      List<Integer> blank = new ArrayList<Integer>();
+      for (int i = 0; i < nodes.size() - 1; i++) {
+        blank.add(null);
+      }
+      matrix.add(blank);
+      for (int i = 0; i < nodes.size(); i++) {
+        matrix.get(i).add(null);
+      }
       return;
     }
     System.out.println("Node" + label + " already exists");
@@ -58,9 +79,10 @@ public class AdjacencyMatrix implements IGraph {
       int fromIndex = getNodeIndex(from);
       int toIndex = getNodeIndex(to);
       int itWeight = isWeighted ? weight : 1;
-      matrix[fromIndex][toIndex] = itWeight;
+
+      matrix.get(fromIndex).set(toIndex, itWeight);
       if (!isDirected) {
-        matrix[toIndex][fromIndex] = weight;
+        matrix.get(toIndex).set(fromIndex, itWeight);
       }
     } catch (Exception e) {
       System.out.println(e);
@@ -72,9 +94,9 @@ public class AdjacencyMatrix implements IGraph {
       int index = getNodeIndex(label);
       if (index != -1) {
         for (int i = 0; i < nodes.size(); i++) {
-          matrix[i][index] = 0;
-          matrix[index][i] = 0;
+          matrix.get(i).remove(index);
         }
+        matrix.remove(index);
         nodes.remove(index);
       }
     } catch (Exception e) {
@@ -86,9 +108,9 @@ public class AdjacencyMatrix implements IGraph {
     try {
       int fromIndex = getNodeIndex(from);
       int toIndex = getNodeIndex(to);
-      matrix[fromIndex][toIndex] = 0;
+      matrix.get(fromIndex).set(toIndex, null);
       if (!isDirected) {
-        matrix[toIndex][fromIndex] = 0;
+        matrix.get(toIndex).set(fromIndex, null);
       }
     } catch (Exception e) {
       System.out.println(e);
@@ -109,7 +131,10 @@ public class AdjacencyMatrix implements IGraph {
         addNode(to);
         toIndex = getNodeIndex(to);
       }
-      matrix[fromIndex][toIndex] = itWeight;
+      matrix.get(fromIndex).set(toIndex, itWeight);
+      if (!isDirected) {
+        matrix.get(toIndex).set(fromIndex, itWeight);
+      }
     } catch (Exception e) {
       System.out.println(e);
     }
@@ -119,7 +144,8 @@ public class AdjacencyMatrix implements IGraph {
     try {
       int fromIndex = getNodeIndex(from);
       int toIndex = getNodeIndex(to);
-      return matrix[fromIndex][toIndex];
+
+      return matrix.get(fromIndex).get(toIndex);
     } catch (Exception e) {
       System.out.println(e);
       return null;
@@ -130,7 +156,8 @@ public class AdjacencyMatrix implements IGraph {
     try {
       int fromIndex = getNodeIndex(from);
       int toIndex = getNodeIndex(to);
-      return matrix[fromIndex][toIndex] != 0;
+
+      return matrix.get(fromIndex).get(toIndex) != null;
     } catch (Exception e) {
       System.out.println(e);
       return false;
@@ -142,8 +169,8 @@ public class AdjacencyMatrix implements IGraph {
     try {
       int index = getNodeIndex(label);
       for (int i = 0; i < nodes.size(); i++) {
-        if (matrix[index][i] != 0) {
-          edges.add(new Edge(nodes.get(i), matrix[index][i]));
+        if (matrix.get(index).get(i) != null) {
+          edges.add(new Edge(new Node(label), matrix.get(index).get(i)));
         }
       }
     } catch (Exception e) {
@@ -152,19 +179,67 @@ public class AdjacencyMatrix implements IGraph {
     return edges;
   }
 
-  public void printGraph() {
-    System.out.print("Nodes: ");
+  public int getIndegre(String label) {
+    try {
+      int index = getNodeIndex(label);
+      int indegre = 0;
+      for (int i = 0; i < nodes.size(); i++) {
+        if (matrix.get(i).get(index) != null) {
+          indegre++;
+        }
+      }
+      return indegre;
+    } catch (Exception e) {
+      System.out.println(e);
+      return -1;
+    }
+  }
+
+  public int getOutdegre(String label) {
+    try {
+      int index = getNodeIndex(label);
+      int outdegre = 0;
+      for (int i = 0; i < nodes.size(); i++) {
+        if (matrix.get(index).get(i) != null) {
+          outdegre++;
+        }
+      }
+      return outdegre;
+    } catch (Exception e) {
+      System.out.println(e);
+      return -1;
+    }
+  }
+
+  public int getDegree(String label) {
+    try {
+      return getIndegre(label) + getOutdegre(label);
+    } catch (Exception e) {
+      System.out.println(e);
+      return -1;
+    }
+  }
+
+  public String toString() {
+    StringBuilder result = new StringBuilder();
+
+    result.append("Nodes: ");
     for (int i = 0; i < nodes.size(); i++) {
-      System.out.print(nodes.get(i).getLabel() + "(" + i + "), ");
+      result
+        .append(nodes.get(i).getLabel())
+        .append("(")
+        .append(i)
+        .append("), ");
+    }
+    result.append("\nEdges:\n");
+    for (int i = 0; i < nodes.size(); i++) {
+      result.append(nodes.get(i).getLabel()).append(": ");
+      for (int j = 0; j < nodes.size(); j++) {
+        result.append(matrix.get(i).get(j)).append(" ");
+      }
+      result.append("\n");
     }
 
-    System.out.println("\nEdges:");
-    for (int i = 0; i < nodes.size(); i++) {
-      System.out.print(nodes.get(i).getLabel() + ": ");
-      for (int j = 0; j < nodes.size(); j++) {
-        System.out.print(matrix[i][j] + " | ");
-      }
-      System.out.println();
-    }
+    return result.toString();
   }
 }
