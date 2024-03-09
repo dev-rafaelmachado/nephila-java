@@ -18,7 +18,7 @@ public class AdjacencyListTest {
 
   public void runAll() {
     System.out.println(
-      "itShouldAddNode: " +
+      "it Should Add Node: " +
       (
         itShouldAddNode()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -27,7 +27,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldRemoveNode: " +
+      "it Should Remove Node: " +
       (
         itShouldRemoveNode()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -36,7 +36,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldAddEdge: " +
+      "it Should Add Edge: " +
       (
         itShouldAddEdge()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -45,7 +45,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldRemoveEdge: " +
+      "it Should Remove Edge: " +
       (
         itShouldRemoveEdge()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -54,7 +54,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldUpdateEdge: " +
+      "it Should Update Edge: " +
       (
         itShouldUpdateEdge()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -63,7 +63,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldIsNeighbor: " +
+      "it Should Is Neighbor: " +
       (
         itShouldIsNeighbor()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -72,7 +72,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldGetNeighbors: " +
+      "it Should Get Neighbors: " +
       (
         itShouldGetNeighbors()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -81,7 +81,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldGetIndegre: " +
+      "it Should Get Indegree: " +
       (
         itShouldGetIndegre()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -90,7 +90,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldGetOutdegre: " +
+      "it Should Get Outdegree: " +
       (
         itShouldGetOutdegre()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -99,7 +99,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldGetDegree: " +
+      "it Should Get Degree: " +
       (
         itShouldGetDegree()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
@@ -108,7 +108,7 @@ public class AdjacencyListTest {
     );
 
     System.out.println(
-      "itShouldGetWeight: " +
+      "it Should Get Weight: " +
       (
         itShouldGetWeight()
           ? ANSI_GREEN + "PASSED" + ANSI_RESET
