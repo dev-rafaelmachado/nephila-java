@@ -220,6 +220,32 @@ public class AdjacencyMatrix implements IGraph {
     }
   }
 
+  public List<List<Integer>> getWarshall() {
+    List<List<Integer>> warshall = new ArrayList<>();
+    for (int i = 0; i < nodes.size(); i++) {
+      List<Integer> row = new ArrayList<>();
+      for (int j = 0; j < nodes.size(); j++) {
+        row.add(matrix.get(i).get(j));
+      }
+      warshall.add(row);
+    }
+
+    for (int k = 0; k < nodes.size(); k++) {
+      for (int i = 0; i < nodes.size(); i++) {
+        for (int j = 0; j < nodes.size(); j++) {
+          if (warshall.get(i).get(k) != null && warshall.get(k).get(j) != null) {
+            if (warshall.get(i).get(j) == null) {
+              warshall.get(i).set(j, warshall.get(i).get(k) + warshall.get(k).get(j));
+            } else {
+              warshall.get(i).set(j, Math.min(warshall.get(i).get(j), warshall.get(i).get(k) + warshall.get(k).get(j)));
+            }
+          }
+        }
+      }
+    }
+    return warshall;
+  } 
+
   public String toString() {
     StringBuilder result = new StringBuilder();
 

@@ -90,6 +90,12 @@ public interface IGraph {
   public int getDegree(String label);
 
   /**
+   * Get the warshall matrix of the graph
+   * @return the warshall matrix of the graph
+   */
+  public List<List<Integer>> getWarshall();
+
+  /**
    * print the graph in a human-readable format
    */
   public String toString();

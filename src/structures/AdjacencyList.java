@@ -44,6 +44,27 @@ public class AdjacencyList implements IGraph {
     return null;
   }
 
+  private List<List<Integer>> getGraphMatrix() {
+    List<List<Integer>> matrix = new ArrayList<>();
+    for (int i = 0; i < nodes.size(); i++) {
+      List<Integer> row = new ArrayList<>();
+      for (int j = 0; j < nodes.size(); j++) {
+        row.add(null);
+      }
+      matrix.add(row);
+    }
+
+    for (int i = 0; i < nodes.size(); i++) {
+      Node node = nodes.get(i);
+      for (Edge edge : node.getNeighbors()) {
+        int j = nodes.indexOf(edge.getNode());
+        matrix.get(i).set(j, edge.getWeight());
+      }
+    }
+
+    return matrix;
+  }
+
   public void addNode(String label) {
     boolean exists = hasNode(label) != null;
     if (!exists) {
@@ -200,6 +221,23 @@ public class AdjacencyList implements IGraph {
       System.out.println(e);
       return -1;
     }
+  }
+
+  public List<List<Integer>> getWarshall() {
+    List<List<Integer>> matrix = getGraphMatrix();
+    for (int k = 0; k < nodes.size(); k++) {
+      for (int i = 0; i < nodes.size(); i++) {
+        for (int j = 0; j < nodes.size(); j++) {
+          if (matrix.get(i).get(k) != null && matrix.get(k).get(j) != null) {
+            int sum = matrix.get(i).get(k) + matrix.get(k).get(j);
+            if (matrix.get(i).get(j) == null || sum < matrix.get(i).get(j)) {
+              matrix.get(i).set(j, sum);
+            }
+          }
+        }
+      }
+    }
+    return matrix;
   }
 
   public String toString() {

@@ -8,28 +8,31 @@ import utils.GraphTypes;
 
 public class App {
 
+  private static void testGraph(IGraph graph, String type) {
+    if (type.equals("list")) {
+      System.out.println("Adjacency List Tests:");
+      AdjacencyListTest testList = new AdjacencyListTest((AdjacencyList) graph);
+      testList.runAll();
+    } else {
+      System.out.println("Adjacency Matrix Tests:");
+      AdjacencyMatrixTest test = new AdjacencyMatrixTest((AdjacencyMatrix) graph);
+      test.runAll();
+    }
+  }
+
   public static void main(String[] args) throws Exception {
-    IGraph graph = Graph.createGraph(GraphTypes.LIST, true, true);
-    if (graph == null) {
-      System.out.println("Graph not created");
-      return;
-    }
+    IGraph graph = Graph.createGraph(GraphTypes.MATRIX, true, true);
+    testGraph(graph, "matrix");
+  
+    graph.addNode("A");
+    graph.addNode("B");
+    graph.addNode("C");
 
-    System.out.println("Adjacency List Tests:");
-    AdjacencyListTest testList = new AdjacencyListTest((AdjacencyList) graph);
-    testList.runAll();
+    graph.addEdge("A", "B", 1);
+    graph.addEdge("B", "C", 1);
 
-    System.out.println("\n\n");
+    System.out.println(graph);
 
-    graph = Graph.createGraph(GraphTypes.MATRIX, true, true);
-
-    if (graph == null) {
-      System.out.println("Graph not created");
-      return;
-    }
-
-    System.out.println("Adjacency Matrix Tests:");
-    AdjacencyMatrixTest test = new AdjacencyMatrixTest((AdjacencyMatrix) graph);
-    test.runAll();
+    System.out.println(graph.getWarshall());
   }
 }
