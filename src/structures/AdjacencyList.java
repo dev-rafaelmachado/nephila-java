@@ -1,12 +1,21 @@
 package structures;
 
 import interfaces.IGraph;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import share.Edge;
 import share.Node;
+import share.Queue.Queue;
+import share.Tree.BinaryTree;
 
 public class AdjacencyList implements IGraph {
+
+  private static String currentPath = Paths.get("").toAbsolutePath().toString();
 
   private List<Node> nodes;
   private boolean isWeighted;
@@ -16,6 +25,14 @@ public class AdjacencyList implements IGraph {
     nodes = new ArrayList<>();
     this.isWeighted = isWeighted;
     this.isDirected = isDirected;
+  }
+
+  public boolean getIsWeighted() {
+    return isWeighted;
+  }
+
+  public boolean getIsDirected() {
+    return isDirected;
   }
 
   protected List<Node> getListNodes() {
@@ -124,6 +141,7 @@ public class AdjacencyList implements IGraph {
       Node fromNode = hasNode(from);
       Node toNode = hasNode(to);
       int itWeight = isWeighted ? weight : 1;
+
       if (fromNode == null) {
         addNode(from);
         fromNode = getNode(from);
@@ -201,7 +219,7 @@ public class AdjacencyList implements IGraph {
     } catch (Exception e) {
       System.out.println(e);
       return -1;
-    } 
+    }
   }
 
   public int getOutdegre(String label) {
@@ -254,5 +272,221 @@ public class AdjacencyList implements IGraph {
       sb.append("\n");
     }
     return sb.toString();
+  }
+
+  public BinaryTree dfs(String start, String end) {
+    BinaryTree tree = new BinaryTree();
+    List<Node> visitedNodes = new ArrayList<>();
+    Node startNode = getNode(start);
+
+    if (startNode != null) {
+      Stack<Node> stack = new Stack<>();
+      stack.push(startNode);
+      while (!stack.isEmpty()) {
+        Node node = stack.pop();
+        if (!tree.hasNode(node.getLabel())) {
+          tree.insert(node.getLabel());
+          if (node.getLabel().equals(end)) {
+            break;
+          }
+          for (Edge edge : node.getNeighbors()) {
+            if (!visitedNodes.contains(edge.getNode())) {
+              stack.push(edge.getNode());
+            }
+          }
+        }
+      }
+    }
+    return tree;
+  }
+
+  public BinaryTree bfs(String start, String end) {
+    BinaryTree tree = new BinaryTree();
+    List<Node> visitedNodes = new ArrayList<>();
+
+    Node startNode = getNode(start);
+    if (startNode != null) {
+      Queue<Node> queue = new Queue<>();
+      queue.enqueue(startNode);
+      while (!queue.isEmpty()) {
+        Node node = queue.dequeue();
+        if (!tree.hasNode(node.getLabel())) {
+          tree.insert(node.getLabel());
+          visitedNodes.add(node);
+          if (node.getLabel().equals(end)) {
+            break;
+          }
+          for (Edge edge : node.getNeighbors()) {
+            if (!visitedNodes.contains(edge.getNode())) {
+              queue.enqueue(edge.getNode());
+            }
+          }
+        }
+      }
+    }
+    return tree;
+  }
+
+  public boolean isEulerian() {
+    BinaryTree tree = dfs(nodes.get(0).getLabel(), null);
+    if (tree.returnAllNodes().size() != nodes.size()) {
+      return false;
+    }
+
+    if (this.isDirected) {
+      int baseIndegre = getIndegre(nodes.get(0).getLabel());
+      int baseOutdegre = getOutdegre(nodes.get(0).getLabel());
+
+      for (Node node : nodes) {
+        if (
+          getIndegre(node.getLabel()) != baseIndegre ||
+          getOutdegre(node.getLabel()) != baseOutdegre
+        ) {
+          return false;
+        }
+      }
+    }
+
+    if (!this.isDirected) {
+      for (Node node : nodes) {
+        if (getDegree(node.getLabel()) % 2 != 0) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  private Node getClosestNode(List<Node> unvisitedNodes) {
+    Node closestNode = unvisitedNodes.get(0);
+    for (Node node : unvisitedNodes) {
+      if (node.getDistance() < closestNode.getDistance()) {
+        closestNode = node;
+      }
+    }
+    return closestNode;
+  }
+
+  public List<String> getDijkstra(String start, String end) {
+    List<String> path = new ArrayList<>();
+    List<Node> visitedNodes = new ArrayList<>();
+    List<Node> unvisitedNodes = new ArrayList<>();
+    Node startNode = getNode(start);
+    Node endNode = getNode(end);
+
+    if (startNode != null && endNode != null) {
+      for (Node node : nodes) {
+        if (node.equals(startNode)) {
+          node.setDistance(0);
+        } else {
+          node.setDistance(Integer.MAX_VALUE);
+        }
+        unvisitedNodes.add(node);
+      }
+
+      while (!unvisitedNodes.isEmpty()) {
+        Node currentNode = getClosestNode(unvisitedNodes);
+        unvisitedNodes.remove(currentNode);
+        for (Edge edge : currentNode.getNeighbors()) {
+          Node neighbor = edge.getNode();
+          if (!visitedNodes.contains(neighbor)) {
+            int newDistance = currentNode.getDistance() + edge.getWeight();
+            if (newDistance < neighbor.getDistance()) {
+              neighbor.setDistance(newDistance);
+              List<Node> shortestPath = new ArrayList<>(
+                currentNode.getShortestPath()
+              );
+              shortestPath.add(currentNode);
+              neighbor.setShortestPath(shortestPath);
+            }
+          }
+        }
+        visitedNodes.add(currentNode);
+      }
+
+      for (Node node : endNode.getShortestPath()) {
+        path.add(node.getLabel());
+      }
+      path.add(endNode.getLabel());
+    }
+
+    return path;
+  }
+
+  public IGraph getPrim(String start) {
+    BinaryTree tree = dfs(nodes.get(0).getLabel(), null);
+    if (tree.returnAllNodes().size() != nodes.size()) {
+      return null;
+    }
+    List<Node> visitedNodes = new ArrayList<>();
+
+    IGraph prim = new AdjacencyList(true, false);
+    for (Node node : nodes) {
+      prim.addNode(node.getLabel());
+    }
+
+    Node startNode = getNode(start);
+    visitedNodes.add(startNode);
+
+    while (visitedNodes.size() < nodes.size()) {
+      Edge minEdge = new Edge(null, Integer.MAX_VALUE);
+      Node minNode = null;
+
+      for (Node currentNode : visitedNodes) {
+        for (Edge edge : currentNode.getNeighbors()) {
+          if (
+            !visitedNodes.contains(edge.getNode()) &&
+            edge.getWeight() < minEdge.getWeight()
+          ) {
+            minEdge = edge;
+            minNode = currentNode;
+          }
+        }
+      }
+
+      if (minEdge.getNode() != null) {
+        visitedNodes.add(minEdge.getNode());
+        prim.addEdge(
+          minNode.getLabel(),
+          minEdge.getNode().getLabel(),
+          minEdge.getWeight()
+        );
+      }
+    }
+
+    return prim;
+  }
+
+  public void saveGraph(String filename) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentPath + filename))) {
+      writer.write("% directed=" + isDirected);
+      writer.newLine();
+      writer.write("% weighted=" + isWeighted);
+      writer.newLine();
+      writer.write("% representation=list");
+      writer.newLine();
+      writer.write("*Vertices " + nodes.size());
+      writer.newLine();
+      for (int i = 0; i < nodes.size(); i++) {
+        writer.write(i + " " + nodes.get(i).getLabel());
+        writer.newLine();
+      }
+      writer.write("*arcs");
+      writer.newLine();
+      for (Node node : nodes) {
+        for (Edge edge : node.getNeighbors()) {
+          writer.write(
+            nodes.indexOf(node) +
+            " " +
+            nodes.indexOf(edge.getNode()) +
+            " " +
+            edge.getWeight()
+          );
+          writer.newLine();
+        }
+      }
+    } catch (IOException e) {
+      System.err.println("Error writing to file: " + e.getMessage());
+    }
   }
 }

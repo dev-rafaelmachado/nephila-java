@@ -2,6 +2,7 @@ package interfaces;
 
 import java.util.List;
 import share.Edge;
+import share.Tree.BinaryTree;
 
 /**
  * This interface represents a graph data structure.
@@ -15,10 +16,11 @@ public interface IGraph {
   public void addNode(String label);
 
   /**
-   * Adds an edge between two nodes in the graph with the specified labels and weight.
+   * Adds an edge between two nodes in the graph with the specified labels and
+   * weight.
    *
-   * @param from the label of the source node
-   * @param to the label of the destination node
+   * @param from   the label of the source node
+   * @param to     the label of the destination node
    * @param weight the weight of the edge
    */
   public void addEdge(String from, String to, int weight);
@@ -34,7 +36,7 @@ public interface IGraph {
    * Removes an edge between two nodes in the graph with the specified labels.
    *
    * @param from the label of the source node
-   * @param to the label of the destination node
+   * @param to   the label of the destination node
    */
   public void removeEdge(String from, String to);
 
@@ -42,13 +44,14 @@ public interface IGraph {
    * Checks if two nodes in the graph are neighbors.
    *
    * @param from the label of the source node
-   * @param to the label of the destination node
+   * @param to   the label of the destination node
    * @return true if the nodes are neighbors, false otherwise
    */
   public boolean isNeighbor(String from, String to);
 
   /**
-   * Returns a list of edges that are adjacent to the node with the specified label.
+   * Returns a list of edges that are adjacent to the node with the specified
+   * label.
    *
    * @param label the label of the node
    * @return a list of adjacent edges
@@ -56,20 +59,24 @@ public interface IGraph {
   public List<Edge> getNeighbors(String label);
 
   /**
-   * Update the weight of an edge between two nodes in the graph with the specified labels. if the edge does not exist, it will be created.
-   * @param from the label of the source node
-   * @param to the label of the destination node
+   * Update the weight of an edge between two nodes in the graph with the
+   * specified labels. if the edge does not exist, it will be created.
+   * 
+   * @param from   the label of the source node
+   * @param to     the label of the destination node
    * @param weight the weight of the edge
    */
   public void updateEdge(String from, String to, int weight);
 
   /**
-   * Get the weight of an edge between two nodes in the graph with the specified labels. if the edge does not exist, it will return null.
+   * Get the weight of an edge between two nodes in the graph with the specified
+   * labels. if the edge does not exist, it will return null.
    */
   public Integer getEdgeWeight(String from, String to);
 
   /**
    * Get the indegre of a node in the graph with the specified label
+   * 
    * @param label the label of the node
    * @return the indegre of the node
    */
@@ -77,6 +84,7 @@ public interface IGraph {
 
   /**
    * Get the outdegre of a node in the graph with the specified label
+   * 
    * @param label the label of the node
    * @return the outdegre of the node
    */
@@ -84,6 +92,7 @@ public interface IGraph {
 
   /**
    * Get degree of a node in the graph with the specified label
+   * 
    * @param label the label of the node
    * @return the degree of the node
    */
@@ -91,6 +100,7 @@ public interface IGraph {
 
   /**
    * Get the warshall matrix of the graph
+   * 
    * @return the warshall matrix of the graph
    */
   public List<List<Integer>> getWarshall();
@@ -99,13 +109,53 @@ public interface IGraph {
    * print the graph in a human-readable format
    */
   public String toString();
-  /**
-   * Save the graph in a file
-   */
-  // public void saveGraph(String filename);
 
   /**
-   * returns a new matrix graph with the closure transitive of the graph (Warshall algorithm)
+   * Get the DFS path from start to end
+   * 
+   * @param start
+   * @param end
+   * @return the DFS path from start to end
    */
-  // public IGraph closureTransitive();
+  public BinaryTree dfs(String start, String end);
+
+  /**
+   * Get the BFS path from start to end
+   * 
+   * @param start
+   * @param end
+   * @return the BFS path from start to end
+   */
+  public BinaryTree bfs(String start, String end);
+
+  /**
+   * Check if the graph is connected
+   * 
+   * @return true if the graph is connected, false otherwise
+   */
+  public boolean isEulerian();
+
+  /**
+   * Get the Dijkstra path from start to end
+   * 
+   * @param start
+   * @param end
+   * @return the Dijkstra path from start to end
+   */
+  public List<String> getDijkstra(String start, String end);
+
+  /**
+   * Get the Prim tree (in graph form)
+   * 
+   * @param start
+   * @return the Prim tree (in graph form)
+   */
+  public IGraph getPrim(String start);
+
+  /**
+   * save the graph in a file
+   * 
+   * @param filename
+   */
+  public void saveGraph(String filename);
 }

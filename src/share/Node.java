@@ -7,6 +7,8 @@ import interfaces.INode;
 public class Node implements INode {
     private String label;
     private List<Edge> neighbors;
+    private int distance;
+    private List<Node> shortestPath;
 
     public Node(String label) {
         this.label = label;
@@ -55,5 +57,19 @@ public class Node implements INode {
     public List<Edge> getNeighbors() {
         return neighbors;
     }
-}
+    public int getDistance() {
+        return distance;
+    }
 
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
+    public List<Node> getShortestPath() {
+        return shortestPath;
+    }
+
+    public void setShortestPath(List<Node> shortestPath) {
+        this.shortestPath = shortestPath;
+    }
+}

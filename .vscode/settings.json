@@ -5,6 +5,6 @@
         "lib/**/*.jar"
     ],
     "cSpell.words": [
-        "Warshall"
+        "Eulerian"
     ]
 }

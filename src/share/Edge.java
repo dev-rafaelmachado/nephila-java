@@ -17,11 +17,13 @@ public class Edge {
         return weight;
     }
 
-    public void setNode(Node node) {
-        this.node = node;
-    }
-
     public void setWeight(int weight) {
         this.weight = weight;
     }
+
+    @Override
+    public String toString() {
+        return node.getLabel() + " (" + weight + ")";
+    }
+
 }
