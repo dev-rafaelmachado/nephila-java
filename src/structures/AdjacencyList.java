@@ -6,8 +6,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
+import org.knowm.xchart.BitmapEncoder;
+import org.knowm.xchart.CategoryChart;
+import org.knowm.xchart.CategoryChartBuilder;
+import org.knowm.xchart.style.Styler.LegendPosition;
 import share.Edge;
 import share.Node;
 import share.Queue.Queue;
@@ -458,7 +464,11 @@ public class AdjacencyList implements IGraph {
   }
 
   public void saveGraph(String filename) {
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(currentPath + filename))) {
+    try (
+      BufferedWriter writer = new BufferedWriter(
+        new FileWriter(currentPath + filename)
+      )
+    ) {
       writer.write("% directed=" + isDirected);
       writer.newLine();
       writer.write("% weighted=" + isWeighted);
@@ -487,6 +497,44 @@ public class AdjacencyList implements IGraph {
       }
     } catch (IOException e) {
       System.err.println("Error writing to file: " + e.getMessage());
+    }
+  }
+
+  public void degreeDistribution(String filename) {
+    Map<Integer, Integer> degreeDistribution = new HashMap<>();
+    for (Node node : nodes) {
+      int degree = node.getNeighbors().size();
+      degreeDistribution.put(
+        degree,
+        degreeDistribution.getOrDefault(degree, 0) + 1
+      );
+    }
+
+    List<Integer> xData = new ArrayList<>(degreeDistribution.keySet());
+    List<Integer> yData = new ArrayList<>(degreeDistribution.values());
+
+    CategoryChart chart = new CategoryChartBuilder()
+      .width(800)
+      .height(600)
+      .title("Degree Distribution")
+      .xAxisTitle("Degree")
+      .yAxisTitle("Frequency")
+      .build();
+
+    chart.getStyler().setLegendPosition(LegendPosition.InsideNW);
+    chart.getStyler().setAvailableSpaceFill(.96);
+    chart.getStyler().setOverlapped(true);
+
+    chart.addSeries("Degree Distribution", xData, yData);
+
+    try {
+      BitmapEncoder.saveBitmap(
+        chart,
+        currentPath + filename,
+        BitmapEncoder.BitmapFormat.PNG
+      );
+    } catch (IOException e) {
+      System.err.println("Error saving chart to file: " + e.getMessage());
     }
   }
 }

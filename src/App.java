@@ -7,6 +7,7 @@ public class App {
     IGraph graph = Graph.loadGraph("/src/assets/graph.net");
     System.out.println(graph);
 
+    graph.degreeDistribution("/src/assets/chart.png");
     // IGraph graph = Graph.createGraph(GraphTypes.LIST, false, false);
     // graph.addNode("A");
     // graph.addNode("B");

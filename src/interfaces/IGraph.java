@@ -61,7 +61,7 @@ public interface IGraph {
   /**
    * Update the weight of an edge between two nodes in the graph with the
    * specified labels. if the edge does not exist, it will be created.
-   * 
+   *
    * @param from   the label of the source node
    * @param to     the label of the destination node
    * @param weight the weight of the edge
@@ -76,7 +76,7 @@ public interface IGraph {
 
   /**
    * Get the indegre of a node in the graph with the specified label
-   * 
+   *
    * @param label the label of the node
    * @return the indegre of the node
    */
@@ -84,7 +84,7 @@ public interface IGraph {
 
   /**
    * Get the outdegre of a node in the graph with the specified label
-   * 
+   *
    * @param label the label of the node
    * @return the outdegre of the node
    */
@@ -92,7 +92,7 @@ public interface IGraph {
 
   /**
    * Get degree of a node in the graph with the specified label
-   * 
+   *
    * @param label the label of the node
    * @return the degree of the node
    */
@@ -100,7 +100,7 @@ public interface IGraph {
 
   /**
    * Get the warshall matrix of the graph
-   * 
+   *
    * @return the warshall matrix of the graph
    */
   public List<List<Integer>> getWarshall();
@@ -112,7 +112,7 @@ public interface IGraph {
 
   /**
    * Get the DFS path from start to end
-   * 
+   *
    * @param start
    * @param end
    * @return the DFS path from start to end
@@ -121,7 +121,7 @@ public interface IGraph {
 
   /**
    * Get the BFS path from start to end
-   * 
+   *
    * @param start
    * @param end
    * @return the BFS path from start to end
@@ -130,14 +130,14 @@ public interface IGraph {
 
   /**
    * Check if the graph is connected
-   * 
+   *
    * @return true if the graph is connected, false otherwise
    */
   public boolean isEulerian();
 
   /**
    * Get the Dijkstra path from start to end
-   * 
+   *
    * @param start
    * @param end
    * @return the Dijkstra path from start to end
@@ -146,7 +146,7 @@ public interface IGraph {
 
   /**
    * Get the Prim tree (in graph form)
-   * 
+   *
    * @param start
    * @return the Prim tree (in graph form)
    */
@@ -154,8 +154,14 @@ public interface IGraph {
 
   /**
    * save the graph in a file
-   * 
+   *
    * @param filename
    */
   public void saveGraph(String filename);
+
+  /**
+   * Get the degree distribution of the graph and save it in a file
+   * @param filename
+   */
+  public void degreeDistribution(String filename);
 }

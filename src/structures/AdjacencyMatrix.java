@@ -515,4 +515,9 @@ public class AdjacencyMatrix implements IGraph {
       System.err.println("Error writing to file: " + e.getMessage());
     }
   }
+
+  public void degreeDistribution(String filename) {
+    // TODO Auto-generated method stub
+
+  }
 }
