@@ -33,22 +33,6 @@ public class AdjacencyList implements IGraph {
     this.isDirected = isDirected;
   }
 
-  public boolean getIsWeighted() {
-    return isWeighted;
-  }
-
-  public boolean getIsDirected() {
-    return isDirected;
-  }
-
-  protected List<Node> getListNodes() {
-    return nodes;
-  }
-
-  protected void eraseNodes() {
-    nodes = new ArrayList<>();
-  }
-
   private Node getNode(String label) {
     for (Node node : nodes) {
       if (node.getLabel().equals(label)) {
@@ -503,7 +487,7 @@ public class AdjacencyList implements IGraph {
   public void degreeDistribution(String filename) {
     Map<Integer, Integer> degreeDistribution = new HashMap<>();
     for (Node node : nodes) {
-      int degree = node.getNeighbors().size();
+      int degree = getDegree(node.getLabel());
       degreeDistribution.put(
         degree,
         degreeDistribution.getOrDefault(degree, 0) + 1
