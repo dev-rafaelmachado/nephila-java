@@ -50,7 +50,7 @@ public class Graph {
 
     try (
       BufferedReader br = new BufferedReader(
-        new FileReader(currentPath + filename)
+        new FileReader(currentPath + "/" + filename)
       )
     ) {
       String line;

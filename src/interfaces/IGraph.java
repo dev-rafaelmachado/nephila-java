@@ -3,6 +3,7 @@ package interfaces;
 import java.util.List;
 import share.Edge;
 import share.Tree.BinaryTree;
+import structures.AdjacencyMatrix;
 
 /**
  * This interface represents a graph data structure.
@@ -103,7 +104,7 @@ public interface IGraph {
    *
    * @return the warshall matrix of the graph
    */
-  public List<List<Integer>> getWarshall();
+  public AdjacencyMatrix getWarshall();
 
   /**
    * print the graph in a human-readable format

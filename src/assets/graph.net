@@ -1,7 +1,7 @@
 % directed=true
 % weighted=false
-% representation=list
-*Vertices 7
+% representation=matrix
+*Vertices 8
 0 A
 1 B
 2 C
@@ -9,6 +9,7 @@
 4 E
 5 F
 6 G
+7 K
 *arcs
 0 1 1
 0 2 4
@@ -23,3 +24,5 @@
 6 3 2
 6 2 2
 6 5 2
+7 6 1
+7 4 2

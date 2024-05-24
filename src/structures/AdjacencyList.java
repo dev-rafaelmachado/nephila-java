@@ -224,28 +224,78 @@ public class AdjacencyList implements IGraph {
 
   public int getDegree(String label) {
     try {
-      return getIndegre(label) + getOutdegre(label);
+      if (isDirected) return getIndegre(label) + getOutdegre(label);
+      return getIndegre(label);
     } catch (Exception e) {
       System.out.println(e);
       return -1;
     }
   }
 
-  public List<List<Integer>> getWarshall() {
+  public AdjacencyMatrix getWarshall() {
+    AdjacencyMatrix warshall = new AdjacencyMatrix(false, true);
     List<List<Integer>> matrix = getGraphMatrix();
+
+    for (int i = 0; i < nodes.size(); i++) {
+      for (int j = 0; j < nodes.size(); j++) {
+        if (matrix.get(i).get(j) != null) {
+          warshall.updateEdge(
+            nodes.get(i).getLabel(),
+            nodes.get(j).getLabel(),
+            1
+          );
+        }
+      }
+    }
+
     for (int k = 0; k < nodes.size(); k++) {
       for (int i = 0; i < nodes.size(); i++) {
         for (int j = 0; j < nodes.size(); j++) {
-          if (matrix.get(i).get(k) != null && matrix.get(k).get(j) != null) {
-            int sum = matrix.get(i).get(k) + matrix.get(k).get(j);
-            if (matrix.get(i).get(j) == null || sum < matrix.get(i).get(j)) {
-              matrix.get(i).set(j, sum);
+          if (
+            warshall.getEdgeWeight(
+              nodes.get(i).getLabel(),
+              nodes.get(k).getLabel()
+            ) !=
+            null &&
+            warshall.getEdgeWeight(
+              nodes.get(k).getLabel(),
+              nodes.get(j).getLabel()
+            ) !=
+            null
+          ) {
+            int newWeight =
+              warshall.getEdgeWeight(
+                nodes.get(i).getLabel(),
+                nodes.get(k).getLabel()
+              ) +
+              warshall.getEdgeWeight(
+                nodes.get(k).getLabel(),
+                nodes.get(j).getLabel()
+              );
+            if (
+              warshall.getEdgeWeight(
+                nodes.get(i).getLabel(),
+                nodes.get(j).getLabel()
+              ) ==
+              null ||
+              newWeight <
+              warshall.getEdgeWeight(
+                nodes.get(i).getLabel(),
+                nodes.get(j).getLabel()
+              )
+            ) {
+              warshall.updateEdge(
+                nodes.get(i).getLabel(),
+                nodes.get(j).getLabel(),
+                newWeight
+              );
             }
           }
         }
       }
     }
-    return matrix;
+
+    return warshall;
   }
 
   public String toString() {
@@ -371,6 +421,7 @@ public class AdjacencyList implements IGraph {
         } else {
           node.setDistance(Integer.MAX_VALUE);
         }
+        node.setShortestPath(new ArrayList<>());
         unvisitedNodes.add(node);
       }
 
@@ -394,10 +445,12 @@ public class AdjacencyList implements IGraph {
         visitedNodes.add(currentNode);
       }
 
-      for (Node node : endNode.getShortestPath()) {
-        path.add(node.getLabel());
+      if (endNode.getDistance() < Integer.MAX_VALUE) {
+        for (Node node : endNode.getShortestPath()) {
+          path.add(node.getLabel());
+        }
+        path.add(endNode.getLabel());
       }
-      path.add(endNode.getLabel());
     }
 
     return path;
@@ -450,7 +503,7 @@ public class AdjacencyList implements IGraph {
   public void saveGraph(String filename) {
     try (
       BufferedWriter writer = new BufferedWriter(
-        new FileWriter(currentPath + filename)
+        new FileWriter(currentPath + "/" + filename)
       )
     ) {
       writer.write("% directed=" + isDirected);
@@ -514,7 +567,7 @@ public class AdjacencyList implements IGraph {
     try {
       BitmapEncoder.saveBitmap(
         chart,
-        currentPath + filename,
+        currentPath + "/" + filename,
         BitmapEncoder.BitmapFormat.PNG
       );
     } catch (IOException e) {
