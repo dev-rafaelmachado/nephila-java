@@ -1,6 +1,8 @@
+import implementation.Main;
 import interfaces.IGraph;
 import java.util.List;
 import share.Graph;
+import share.Node;
 import utils.GraphTypes;
 
 public class App {
@@ -211,20 +213,6 @@ public class App {
   }
 
   public static void main(String[] args) throws Exception {
-    IGraph graph = Graph.loadGraph("src/assets/graph.net");
-
-    // Inicialize o grafo conforme sua implementação
-
-    List<String> resultAB = graph.getDijkstra("A", "B");
-    System.out.println("Caminho de A para B: " + resultAB);
-
-    List<String> resultAC = graph.getDijkstra("A", "C");
-    System.out.println("Caminho de A para C: " + resultAC);
-
-    List<String> resultAD = graph.getDijkstra("A", "D");
-    System.out.println("Caminho de A para D: " + resultAD);
-
-    List<String> resultAK = graph.getDijkstra("A", "K");
-    System.out.println("Caminho de A para K: " + resultAK);
+    // Main.handle();
   }
 }

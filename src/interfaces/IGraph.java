@@ -1,7 +1,9 @@
 package interfaces;
 
 import java.util.List;
+import java.util.Map;
 import share.Edge;
+import share.Node;
 import share.Tree.BinaryTree;
 import structures.AdjacencyMatrix;
 
@@ -165,4 +167,116 @@ public interface IGraph {
    * @param filename
    */
   public void degreeDistribution(String filename);
+
+  /**
+   * Get the connected components of the graph
+   * @return the connected components of the graph as a list of lists of nodes
+   */
+  List<List<Node>> getConnectedComponents();
+
+  /**
+   * Get the strongly connected components of the graph
+   * @return the strongly connected components of the graph as a list of lists of nodes
+   */
+  List<List<Node>> getStronglyConnectedComponents();
+
+  /**
+   * Get the degree centrality of a node in the graph with the specified label
+   *
+   * @param label the label of the node
+   * @return the degree centrality of the node
+   */
+  Double getDegreeCentrality(String label);
+
+  /**
+   * Get the degree centrality of all nodes in the graph
+   *
+   * @return the degree centrality of all nodes in the graph
+   */
+  Map<String, Double> getDegreeCentralityOfAllNodes();
+
+  /**
+   * Get the Betweenness centrality of a node in the graph with the specified label
+   *
+   * @param label the label of the node
+   * @return the closeness centrality of the node
+   */
+  Double getBetweennessCentrality(String label);
+
+  /**
+   * Get the Betweenness centrality of all nodes in the graph
+   *
+   * @return the closeness centrality of all nodes in the graph
+   */
+  Map<String, Double> getBetweennessCentralityOfAllNodes();
+
+  /**
+   * Get the Closeness centrality of a node in the graph with the specified label
+   * @param label the label of the node
+   * @return the closeness centrality of the node
+   */
+  Double getClosenessCentrality(String label);
+
+  /**
+   * Get the Closeness centrality of all nodes in the graph
+   * @return the closeness centrality of all nodes in the graph
+   */
+  Map<String, Double> getClosenessCentralityOfAllNodes();
+
+  /**
+   * Get the Eccentricity of a node in the graph with the specified label
+   *
+   * @throws IllegalArgumentException if the graph is not connected
+   * @param label the label of the node
+   * @return the eccentricity of the node
+   */
+  Double getEccentricity(String label);
+
+  /**
+   * Get the Eccentricity of all nodes in the graph
+   *
+   * @throws IllegalArgumentException if the graph is not connected
+   * @return the eccentricity of all nodes in the graph
+   */
+  Map<String, Double> getEccentricityOfAllNodes();
+
+  /**
+   * Get the Diameter of the graph
+   *
+   * @throws IllegalArgumentException if the graph is not connected
+   * @return the diameter of the graph
+   */
+  Double getDiameter();
+
+  /**
+   * Get the Radius of the graph
+   *
+   * @throws IllegalArgumentException if the graph is not connected
+   * @return the radius of the graph
+   */
+  Double getRadius();
+
+  /**
+   * Get the edge betweenness of an edge in the graph with the specified labels
+   *
+   * @param from the label of the source node
+   * @param to the label of the destination node
+   * @return the edge betweenness of the edge
+   */
+  Double getEdgeBetweenness(String from, String to);
+
+  /**
+   * Get the edge betweenness of all edges in the graph
+   *
+   * @return the edge betweenness of all edges in the graph
+   */
+  Map<Edge, Double> getEdgeBetweennessOfAllEdges();
+
+  /**
+   * Get the communities of the graph using Girvan-Newman algorithm
+   *
+   * @param k the number of communities
+   * @return the communities of the graph
+   */
+  List<List<Node>> getCommunities(int k);
 }

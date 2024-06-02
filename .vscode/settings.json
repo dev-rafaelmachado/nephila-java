@@ -5,6 +5,9 @@
         "lib/**/*.jar"
     ],
     "cSpell.words": [
-        "Eulerian"
+        "betweenness",
+        "Betweenness",
+        "Eulerian",
+        "Girvan"
     ]
 }

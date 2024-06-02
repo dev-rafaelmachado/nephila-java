@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.CategoryChart;
@@ -18,6 +20,7 @@ import share.Edge;
 import share.Node;
 import share.Queue.Queue;
 import share.Tree.BinaryTree;
+import share.Tree.BinaryTreeNode;
 
 public class AdjacencyMatrix implements IGraph {
 
@@ -418,6 +421,7 @@ public class AdjacencyMatrix implements IGraph {
     return closestNode;
   }
 
+  // TODO: Refactor this method, the return is wrong
   public List<String> getDijkstra(String start, String end) {
     List<String> path = new ArrayList<>();
     List<Node> visitedNodes = new ArrayList<>();
@@ -443,7 +447,7 @@ public class AdjacencyMatrix implements IGraph {
           Node neighbor = edge.getNode();
           if (!visitedNodes.contains(neighbor)) {
             int newDistance = currentNode.getDistance() + edge.getWeight();
-            if (newDistance < neighbor.getDistance()) {
+            if (newDistance <= neighbor.getDistance()) {
               neighbor.setDistance(newDistance);
               List<Node> shortestPath = new ArrayList<>(
                 currentNode.getShortestPath()
@@ -456,7 +460,12 @@ public class AdjacencyMatrix implements IGraph {
         visitedNodes.add(currentNode);
       }
 
-      if (endNode.getDistance() < Integer.MAX_VALUE) {
+      if (
+        endNode.getDistance() == Integer.MAX_VALUE ||
+        endNode.getShortestPath().isEmpty()
+      ) {
+        return new ArrayList<>();
+      } else {
         for (Node node : endNode.getShortestPath()) {
           path.add(node.getLabel());
         }
@@ -581,5 +590,317 @@ public class AdjacencyMatrix implements IGraph {
     } catch (IOException e) {
       System.err.println("Error saving chart to file: " + e.getMessage());
     }
+  }
+
+  // --- TDE 2
+
+  private List<Node> binaryTreeNodeToNode(
+    List<BinaryTreeNode> binaryTreeNodes
+  ) {
+    List<Node> nodes = new ArrayList<>();
+    for (BinaryTreeNode binaryTreeNode : binaryTreeNodes) {
+      nodes.add(getNode(binaryTreeNode.getData()));
+    }
+    return nodes;
+  }
+
+  public List<List<Node>> getConnectedComponents() {
+    if (isDirected) {
+      throw new IllegalArgumentException(
+        "This method is only for undirected graphs"
+      );
+    }
+    List<List<Node>> connectedComponents = new ArrayList<>();
+    List<Node> visitedNodes = new ArrayList<>();
+
+    for (Node node : nodes) {
+      if (!visitedNodes.contains(node)) {
+        BinaryTree tree = dfs(node.getLabel(), null);
+        List<Node> connectedComponent = binaryTreeNodeToNode(
+          tree.returnAllNodes()
+        );
+        connectedComponents.add(connectedComponent);
+        visitedNodes.addAll(binaryTreeNodeToNode(tree.returnAllNodes()));
+      }
+    }
+    return connectedComponents;
+  }
+
+  private AdjacencyMatrix transposeGraph() {
+    AdjacencyMatrix transposed = new AdjacencyMatrix(
+      this.isWeighted,
+      this.isDirected
+    );
+    for (int i = 0; i < this.nodes.size(); i++) {
+      for (int j = 0; j < this.nodes.size(); j++) {
+        if (this.matrix.get(j).get(i) != null) {
+          transposed.updateEdge(
+            this.nodes.get(i).getLabel(),
+            this.nodes.get(j).getLabel(),
+            this.matrix.get(j).get(i)
+          );
+        }
+      }
+    }
+    return transposed;
+  }
+
+  private void fillOrder(Node node, List<Node> visited, Stack<Node> stack) {
+    visited.add(node);
+    for (Edge edge : getNeighbors(node.getLabel())) {
+      if (!visited.contains(edge.getNode())) {
+        fillOrder(edge.getNode(), visited, stack);
+      }
+    }
+    stack.push(node);
+  }
+
+  public List<List<Node>> getStronglyConnectedComponents() {
+    if (!isDirected) {
+      throw new IllegalArgumentException(
+        "This method is only for directed graphs"
+      );
+    }
+
+    Stack<Node> stack = new Stack<>();
+    List<Node> visited = new ArrayList<>();
+
+    for (Node node : nodes) {
+      if (!visited.contains(node)) {
+        fillOrder(node, visited, stack);
+      }
+    }
+
+    AdjacencyMatrix transposed = transposeGraph();
+    List<List<Node>> stronglyConnectedComponents = new ArrayList<>();
+    visited.clear();
+
+    while (!stack.isEmpty()) {
+      Node node = stack.pop();
+      if (!visited.contains(node)) {
+        BinaryTree tree = transposed.dfs(node.getLabel(), null);
+        List<Node> stronglyConnectedComponent = binaryTreeNodeToNode(
+          tree.returnAllNodes()
+        );
+        stronglyConnectedComponents.add(stronglyConnectedComponent);
+        visited.addAll(stronglyConnectedComponent);
+      }
+    }
+
+    return stronglyConnectedComponents;
+  }
+
+  public Double getDegreeCentrality(String label) {
+    return (double) getDegree(label) / (nodes.size() - 1);
+  }
+
+  public Map<String, Double> getDegreeCentralityOfAllNodes() {
+    Map<String, Double> degreeCentrality = new HashMap<>();
+    for (Node node : nodes) {
+      degreeCentrality.put(
+        node.getLabel(),
+        getDegreeCentrality(node.getLabel())
+      );
+    }
+    return degreeCentrality;
+  }
+
+  public Double getBetweennessCentrality(String label) {
+    Double betweennessCentrality = 0.0;
+
+    for (Node sourceNode : nodes) {
+      for (Node targetNode : nodes) {
+        if (
+          !sourceNode.getLabel().equals(targetNode.getLabel()) &&
+          !sourceNode.getLabel().equals(label) &&
+          !targetNode.getLabel().equals(label)
+        ) {
+          List<String> shortestPath = getDijkstra(
+            sourceNode.getLabel(),
+            targetNode.getLabel()
+          );
+
+          if (!shortestPath.isEmpty()) {
+            if (shortestPath.contains(label)) {
+              betweennessCentrality++;
+            }
+          }
+        }
+      }
+    }
+
+    return betweennessCentrality;
+  }
+
+  public Map<String, Double> getBetweennessCentralityOfAllNodes() {
+    Map<String, Double> betweennessCentrality = new HashMap<>();
+    for (Node node : nodes) {
+      betweennessCentrality.put(
+        node.getLabel(),
+        getBetweennessCentrality(node.getLabel())
+      );
+    }
+    return betweennessCentrality;
+  }
+
+  public Double getClosenessCentrality(String label) {
+    Double closenessCentrality = 0.0;
+
+    for (Node node : nodes) {
+      if (!node.getLabel().equals(label)) {
+        List<String> shortestPath = getDijkstra(node.getLabel(), label);
+        if (!shortestPath.isEmpty()) {
+          closenessCentrality += 1.0 / shortestPath.size();
+        }
+      }
+    }
+
+    return closenessCentrality;
+  }
+
+  public Map<String, Double> getClosenessCentralityOfAllNodes() {
+    Map<String, Double> closenessCentrality = new HashMap<>();
+    for (Node node : nodes) {
+      closenessCentrality.put(
+        node.getLabel(),
+        getClosenessCentrality(node.getLabel())
+      );
+    }
+    return closenessCentrality;
+  }
+
+  public Double getEccentricity(String label) {
+    BinaryTree tree = dfs(nodes.get(0).getLabel(), null);
+    if (tree.returnAllNodes().size() != nodes.size()) {
+      throw new IllegalArgumentException("The graph is not connected");
+    }
+
+    Double eccentricity = 0.0;
+    for (Node node : nodes) {
+      List<String> shortestPath = getDijkstra(node.getLabel(), label);
+      if (!shortestPath.isEmpty()) {
+        eccentricity = Math.max(eccentricity, (double) shortestPath.size());
+      }
+    }
+
+    return eccentricity;
+  }
+
+  public Map<String, Double> getEccentricityOfAllNodes() {
+    Map<String, Double> eccentricity = new HashMap<>();
+    for (Node node : nodes) {
+      eccentricity.put(node.getLabel(), getEccentricity(node.getLabel()));
+    }
+    return eccentricity;
+  }
+
+  public Double getRadius() {
+    Double radius = Double.MAX_VALUE;
+    Map<String, Double> eccentricity = getEccentricityOfAllNodes();
+    for (Double value : eccentricity.values()) {
+      radius = Math.min(radius, value);
+    }
+    return radius;
+  }
+
+  public Double getDiameter() {
+    Double diameter = 0.0;
+    Map<String, Double> eccentricity = getEccentricityOfAllNodes();
+    for (Double value : eccentricity.values()) {
+      diameter = Math.max(diameter, value);
+    }
+    return diameter;
+  }
+
+  public Double getEdgeBetweenness(String from, String to) {
+    Double edgeBetweenness = 0.0;
+
+    for (Node sourceNode : nodes) {
+      for (Node targetNode : nodes) {
+        if (!sourceNode.getLabel().equals(targetNode.getLabel())) {
+          List<String> shortestPath = getDijkstra(
+            sourceNode.getLabel(),
+            targetNode.getLabel()
+          );
+
+          if (!shortestPath.isEmpty()) {
+            if (shortestPath.contains(from) && shortestPath.contains(to)) {
+              edgeBetweenness++;
+            }
+          }
+        }
+      }
+    }
+
+    return edgeBetweenness;
+  }
+
+  public Map<Edge, Double> getEdgeBetweennessOfAllEdges() {
+    Map<Edge, Double> edgeBetweenness = new HashMap<>();
+    Set<Edge> processedEdges = new HashSet<>();
+    for (Node node : nodes) {
+      for (Edge edge : node.getNeighbors()) {
+        if (!processedEdges.contains(edge)) {
+          double betweenness = getEdgeBetweenness(
+            node.getLabel(),
+            edge.getNode().getLabel()
+          );
+          edgeBetweenness.put(edge, betweenness);
+          processedEdges.add(edge);
+        }
+      }
+    }
+    return edgeBetweenness;
+  }
+
+  public List<List<Node>> getCommunities(int k) {
+    if (isDirected) {
+      throw new IllegalArgumentException(
+        "This method is only for undirected graphs"
+      );
+    }
+
+    IGraph copyGraph = new AdjacencyList(isWeighted, isDirected);
+    for (Node node : nodes) {
+      for (Edge edge : node.getNeighbors()) {
+        copyGraph.updateEdge(
+          node.getLabel(),
+          edge.getNode().getLabel(),
+          edge.getWeight()
+        );
+      }
+    }
+
+    List<List<Node>> communities = new ArrayList<>();
+
+    while (communities.size() < k) {
+      Map<Edge, Double> edgeBetweenness = copyGraph.getEdgeBetweennessOfAllEdges();
+
+      Edge edgeToRemove = null;
+      double maxBetweenness = 0.0;
+      for (Map.Entry<Edge, Double> entry : edgeBetweenness.entrySet()) {
+        if (entry.getValue() > maxBetweenness) {
+          maxBetweenness = entry.getValue();
+          edgeToRemove = entry.getKey();
+        }
+      }
+
+      if (edgeToRemove != null) {
+        copyGraph.removeEdge(
+          edgeToRemove.getNode().getLabel(),
+          edgeToRemove.getNode().getLabel()
+        );
+      } else {
+        break;
+      }
+
+      List<List<Node>> connectedComponents = copyGraph.getConnectedComponents();
+
+      if (connectedComponents.size() > communities.size()) {
+        communities = connectedComponents;
+      }
+    }
+
+    return communities;
   }
 }
