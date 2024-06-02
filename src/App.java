@@ -1,8 +1,5 @@
-import implementation.Main;
 import interfaces.IGraph;
-import java.util.List;
 import share.Graph;
-import share.Node;
 import utils.GraphTypes;
 
 public class App {
@@ -214,9 +211,9 @@ public class App {
 
   public static void main(String[] args) throws Exception {
     IGraph graph = Graph.loadGraph(
-      "src/assets/exemplesGraphs/strongConnectedGraph.net"
+      "src/assets/exemplesGraphs/ConnectedGraph.net"
     );
     System.out.println(graph);
-    System.out.println(graph.getRadius());
+    System.out.println(graph.getBetweennessCentrality("A"));
   }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import share.Edge;
 import share.Node;
+import share.PathWithWeight;
 import share.Tree.BinaryTree;
 import structures.AdjacencyMatrix;
 
@@ -145,7 +146,7 @@ public interface IGraph {
    * @param end
    * @return the Dijkstra path from start to end
    */
-  public List<String> getDijkstra(String start, String end);
+  public PathWithWeight getDijkstra(String start, String end);
 
   /**
    * Get the Prim tree (in graph form)

@@ -18,6 +18,7 @@ import org.knowm.xchart.CategoryChartBuilder;
 import org.knowm.xchart.style.Styler.LegendPosition;
 import share.Edge;
 import share.Node;
+import share.PathWithWeight;
 import share.Queue.Queue;
 import share.Tree.BinaryTree;
 import share.Tree.BinaryTreeNode;
@@ -421,7 +422,7 @@ public class AdjacencyMatrix implements IGraph {
     return closestNode;
   }
 
-  public List<String> getDijkstra(String start, String end) {
+  public PathWithWeight getDijkstra(String start, String end) {
     List<String> path = new ArrayList<>();
     List<Node> visitedNodes = new ArrayList<>();
     List<Node> unvisitedNodes = new ArrayList<>();
@@ -445,11 +446,11 @@ public class AdjacencyMatrix implements IGraph {
           break;
         }
         unvisitedNodes.remove(currentNode);
-        for (Edge edge : getNeighbors(currentNode.getLabel())) {
+        for (Edge edge : currentNode.getNeighbors()) {
           Node neighbor = edge.getNode();
           if (!visitedNodes.contains(neighbor)) {
             int newDistance = currentNode.getDistance() + edge.getWeight();
-            if (newDistance <= neighbor.getDistance()) {
+            if (newDistance < neighbor.getDistance()) {
               neighbor.setDistance(newDistance);
               List<Node> shortestPath = new ArrayList<>(
                 currentNode.getShortestPath()
@@ -462,20 +463,16 @@ public class AdjacencyMatrix implements IGraph {
         visitedNodes.add(currentNode);
       }
 
-      if (
-        endNode.getDistance() == Integer.MAX_VALUE ||
-        endNode.getShortestPath().isEmpty()
-      ) {
-        return new ArrayList<>();
-      } else {
+      if (endNode.getDistance() < Integer.MAX_VALUE) {
         for (Node node : endNode.getShortestPath()) {
           path.add(node.getLabel());
         }
         path.add(endNode.getLabel());
+        return new PathWithWeight(path, endNode.getDistance());
       }
     }
 
-    return path;
+    return new PathWithWeight(path, -1);
   }
 
   public IGraph getPrim(String start) {
@@ -720,7 +717,8 @@ public class AdjacencyMatrix implements IGraph {
           List<String> shortestPath = getDijkstra(
             sourceNode.getLabel(),
             targetNode.getLabel()
-          );
+          )
+            .getPath();
 
           if (!shortestPath.isEmpty()) {
             if (shortestPath.contains(label)) {
@@ -746,18 +744,16 @@ public class AdjacencyMatrix implements IGraph {
   }
 
   public Double getClosenessCentrality(String label) {
-    Double closenessCentrality = 0.0;
-
+    Double sum = 0.0;
     for (Node node : nodes) {
-      if (!node.getLabel().equals(label)) {
-        List<String> shortestPath = getDijkstra(node.getLabel(), label);
-        if (!shortestPath.isEmpty()) {
-          closenessCentrality += 1.0 / shortestPath.size();
-        }
+      double shortestPath = getDijkstra(node.getLabel(), label)
+        .getTotalWeight();
+      if (shortestPath != -1) {
+        sum += shortestPath;
       }
     }
 
-    return closenessCentrality;
+    return (nodes.size() - 1) / sum;
   }
 
   public Map<String, Double> getClosenessCentralityOfAllNodes() {
@@ -779,9 +775,10 @@ public class AdjacencyMatrix implements IGraph {
 
     Double eccentricity = 0.0;
     for (Node node : nodes) {
-      List<String> shortestPath = getDijkstra(node.getLabel(), label);
-      if (!shortestPath.isEmpty()) {
-        eccentricity = Math.max(eccentricity, (double) shortestPath.size() - 1);
+      double shortestPath = getDijkstra(node.getLabel(), label)
+        .getTotalWeight();
+      if (shortestPath != -1) {
+        eccentricity = Math.max(eccentricity, (double) shortestPath);
       }
     }
 
@@ -823,7 +820,8 @@ public class AdjacencyMatrix implements IGraph {
           List<String> shortestPath = getDijkstra(
             sourceNode.getLabel(),
             targetNode.getLabel()
-          );
+          )
+            .getPath();
 
           if (!shortestPath.isEmpty()) {
             if (shortestPath.contains(from) && shortestPath.contains(to)) {
