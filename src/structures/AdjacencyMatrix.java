@@ -421,7 +421,6 @@ public class AdjacencyMatrix implements IGraph {
     return closestNode;
   }
 
-  // TODO: Refactor this method, the return is wrong
   public List<String> getDijkstra(String start, String end) {
     List<String> path = new ArrayList<>();
     List<Node> visitedNodes = new ArrayList<>();
@@ -442,6 +441,9 @@ public class AdjacencyMatrix implements IGraph {
 
       while (!unvisitedNodes.isEmpty()) {
         Node currentNode = getClosestNode(unvisitedNodes);
+        if (currentNode.getDistance() == Integer.MAX_VALUE) {
+          break;
+        }
         unvisitedNodes.remove(currentNode);
         for (Edge edge : getNeighbors(currentNode.getLabel())) {
           Node neighbor = edge.getNode();
@@ -779,7 +781,7 @@ public class AdjacencyMatrix implements IGraph {
     for (Node node : nodes) {
       List<String> shortestPath = getDijkstra(node.getLabel(), label);
       if (!shortestPath.isEmpty()) {
-        eccentricity = Math.max(eccentricity, (double) shortestPath.size());
+        eccentricity = Math.max(eccentricity, (double) shortestPath.size() - 1);
       }
     }
 
