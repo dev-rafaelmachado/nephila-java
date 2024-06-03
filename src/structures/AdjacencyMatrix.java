@@ -974,7 +974,8 @@ public class AdjacencyMatrix implements IGraph {
     Map<ExternalEdge, Double> edgeBetweenness = new HashMap<>();
     Set<ExternalEdge> processedEdges = new HashSet<>();
     for (Node node : nodes) {
-      for (Edge edge : node.getNeighbors()) {
+      System.out.println(node.getLabel() + " " + getNeighbors(node.getLabel()));
+      for (Edge edge : getNeighbors(node.getLabel())) {
         ExternalEdge externalEdge = new ExternalEdge(
           node,
           edge.getNode(),
@@ -985,6 +986,13 @@ public class AdjacencyMatrix implements IGraph {
             node.getLabel(),
             edge.getNode().getLabel(),
             reverseWeightOpt
+          );
+          System.out.println(
+            node.getLabel() +
+            " " +
+            edge.getNode().getLabel() +
+            " " +
+            betweenness
           );
           edgeBetweenness.put(externalEdge, betweenness);
           processedEdges.add(externalEdge);

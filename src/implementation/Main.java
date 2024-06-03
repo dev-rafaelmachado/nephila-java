@@ -26,8 +26,8 @@ public class Main {
     // );
     IGraph graph = Graph.loadGraph("src/assets/implementation/graph.net");
     Respondent respondent = new Respondent(graph);
+    System.out.println("Number of nodes: " + graph.getSize());
 
-    System.out.println("Top 10 most productive author pairs:");
-    System.out.println(respondent.getTop10MostProductiveAuthorPairs());
+    System.out.println(respondent.getTop10MostInfluentialAuthorsByCloseness());
   }
 }

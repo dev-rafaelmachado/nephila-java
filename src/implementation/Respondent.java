@@ -21,6 +21,9 @@ public class Respondent {
    */
   public List<Pair<String, String>> getTop10MostProductiveAuthorPairs() {
     Map<ExternalEdge, Double> result = graph.getEdgeBetweennessOfAllEdges();
+
+    System.out.println(result);
+
     List<Map.Entry<ExternalEdge, Double>> entryList = new ArrayList<>(
       result.entrySet()
     );
@@ -63,6 +66,8 @@ public class Respondent {
     );
 
     entryList.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+    System.err.println(entryList);
 
     List<String> top10Authors = new ArrayList<>();
     for (int i = 0; i < Math.min(entryList.size(), 10); i++) {
