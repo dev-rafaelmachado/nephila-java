@@ -25,6 +25,9 @@ public class Main {
     //   "src/assets/implementation/graph.net"
     // );
     IGraph graph = Graph.loadGraph("src/assets/implementation/graph.net");
-    graph.degreeDistribution("src/assets/implementation/degree_distribution");
+    Respondent respondent = new Respondent(graph);
+
+    System.out.println("Top 10 most productive author pairs:");
+    System.out.println(respondent.getTop10MostProductiveAuthorPairs());
   }
 }

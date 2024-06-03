@@ -2,8 +2,9 @@ package interfaces;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import share.Edge;
-import share.Node;
+import share.ExternalEdge;
 import share.PathWithWeight;
 import share.Tree.BinaryTree;
 import structures.AdjacencyMatrix;
@@ -12,6 +13,11 @@ import structures.AdjacencyMatrix;
  * This interface represents a graph data structure.
  */
 public interface IGraph {
+  /**
+   * @return Get the length of nodes list of the graph.
+   */
+  public int getSize();
+
   /**
    * Adds a node to the graph with the specified label.
    *
@@ -144,6 +150,20 @@ public interface IGraph {
    *
    * @param start
    * @param end
+   * @param reverseWeightOpt
+   * @return the Dijkstra path from start to end
+   */
+  public PathWithWeight getDijkstra(
+    String start,
+    String end,
+    Optional<Boolean> reverseWeightOpt
+  );
+
+  /**
+   * Get the Dijkstra path from start to end
+   *
+   * @param start
+   * @param end
    * @return the Dijkstra path from start to end
    */
   public PathWithWeight getDijkstra(String start, String end);
@@ -173,13 +193,13 @@ public interface IGraph {
    * Get the connected components of the graph
    * @return the connected components of the graph as a list of lists of nodes
    */
-  List<List<Node>> getConnectedComponents();
+  List<IGraph> getConnectedComponents();
 
   /**
    * Get the strongly connected components of the graph
    * @return the strongly connected components of the graph as a list of lists of nodes
    */
-  List<List<Node>> getStronglyConnectedComponents();
+  List<IGraph> getStronglyConnectedComponents();
 
   /**
    * Get the degree centrality of a node in the graph with the specified label
@@ -200,9 +220,31 @@ public interface IGraph {
    * Get the Betweenness centrality of a node in the graph with the specified label
    *
    * @param label the label of the node
+   * @param reverseWeightOpt
+   * @return the closeness centrality of the node
+   */
+  Double getBetweennessCentrality(
+    String label,
+    Optional<Boolean> reverseWeightOpt
+  );
+
+  /**
+   * Get the Betweenness centrality of a node in the graph with the specified label
+   *
+   * @param label the label of the node
    * @return the closeness centrality of the node
    */
   Double getBetweennessCentrality(String label);
+
+  /**
+   * Get the Betweenness centrality of all nodes in the graph
+   *
+   * @return the closeness centrality of all nodes in the graph
+   * @param reverseWeightOpt
+   */
+  Map<String, Double> getBetweennessCentralityOfAllNodes(
+    Optional<Boolean> reverseWeightOpt
+  );
 
   /**
    * Get the Betweenness centrality of all nodes in the graph
@@ -214,9 +256,29 @@ public interface IGraph {
   /**
    * Get the Closeness centrality of a node in the graph with the specified label
    * @param label the label of the node
+   * @param reverseWeightOpt
+   * @return the closeness centrality of the node
+   */
+  Double getClosenessCentrality(
+    String label,
+    Optional<Boolean> reverseWeightOpt
+  );
+
+  /**
+   * Get the Closeness centrality of a node in the graph with the specified label
+   * @param label the label of the node
    * @return the closeness centrality of the node
    */
   Double getClosenessCentrality(String label);
+
+  /**
+   * Get the Closeness centrality of all nodes in the graph
+   * @return the closeness centrality of all nodes in the graph
+   * @param reverseWeightOpt
+   */
+  Map<String, Double> getClosenessCentralityOfAllNodes(
+    Optional<Boolean> reverseWeightOpt
+  );
 
   /**
    * Get the Closeness centrality of all nodes in the graph
@@ -229,13 +291,32 @@ public interface IGraph {
    *
    * @throws IllegalArgumentException if the graph is not connected
    * @param label the label of the node
+   * @param reverseWeightOpt
+   * @return the eccentricity of the node
+   */
+  Double getEccentricity(String label, Optional<Boolean> reverseWeightOpt);
+
+  /**
+   * Get the Eccentricity of a node in the graph with the specified label
+   *
+   * @throws IllegalArgumentException if the graph is not connected
+   * @param label the label of the node
    * @return the eccentricity of the node
    */
   Double getEccentricity(String label);
 
   /**
    * Get the Eccentricity of all nodes in the graph
-   *
+   * @param reverseWeightOpt
+   * @throws IllegalArgumentException if the graph is not connected
+   * @return the eccentricity of all nodes in the graph
+   */
+  Map<String, Double> getEccentricityOfAllNodes(
+    Optional<Boolean> reverseWeightOpt
+  );
+
+  /**
+   * Get the Eccentricity of all nodes in the graph
    * @throws IllegalArgumentException if the graph is not connected
    * @return the eccentricity of all nodes in the graph
    */
@@ -243,11 +324,26 @@ public interface IGraph {
 
   /**
    * Get the Diameter of the graph
-   *
+   * @param reverseWeightOpt
+   * @throws IllegalArgumentException if the graph is not connected
+   * @return the diameter of the graph
+   */
+  Double getDiameter(Optional<Boolean> reverseWeightOpt);
+
+  /**
+   * Get the Diameter of the graph
    * @throws IllegalArgumentException if the graph is not connected
    * @return the diameter of the graph
    */
   Double getDiameter();
+
+  /**
+   * Get the Radius of the graph
+   * @param reverseWeightOpt
+   * @throws IllegalArgumentException if the graph is not connected
+   * @return the radius of the graph
+   */
+  Double getRadius(Optional<Boolean> reverseWeightOpt);
 
   /**
    * Get the Radius of the graph
@@ -262,16 +358,47 @@ public interface IGraph {
    *
    * @param from the label of the source node
    * @param to the label of the destination node
+   * @param reverseWeightOpt
+   * @return the edge betweenness of the edge
+   */
+  Double getEdgeBetweenness(
+    String from,
+    String to,
+    Optional<Boolean> reverseWeightOpt
+  );
+
+  /**
+   * Get the edge betweenness of an edge in the graph with the specified labels
+   *
+   * @param from the label of the source node
+   * @param to the label of the destination node
    * @return the edge betweenness of the edge
    */
   Double getEdgeBetweenness(String from, String to);
 
   /**
    * Get the edge betweenness of all edges in the graph
-   *
+   * @param reverseWeightOpt
    * @return the edge betweenness of all edges in the graph
    */
-  Map<Edge, Double> getEdgeBetweennessOfAllEdges();
+  Map<ExternalEdge, Double> getEdgeBetweennessOfAllEdges(
+    Optional<Boolean> reverseWeightOpt
+  );
+
+  /**
+   * Get the edge betweenness of all edges in the graph
+   * @return the edge betweenness of all edges in the graph
+   */
+  Map<ExternalEdge, Double> getEdgeBetweennessOfAllEdges();
+
+  /**
+   * Get the communities of the graph using Girvan-Newman algorithm
+   *
+   * @param k the number of communities
+   * @param reverseWeightOpt
+   * @return the communities of the graph
+   */
+  List<IGraph> getCommunities(int k, Optional<Boolean> reverseWeightOpt);
 
   /**
    * Get the communities of the graph using Girvan-Newman algorithm
@@ -279,5 +406,18 @@ public interface IGraph {
    * @param k the number of communities
    * @return the communities of the graph
    */
-  List<List<Node>> getCommunities(int k);
+  List<IGraph> getCommunities(int k);
+
+  /**
+   * Get the average geodesic distance of the graph
+   * @param reverseWeightOpt
+   * @return the average geodesic distance of the graph
+   */
+  Double getAverageGeodesicDistance(Optional<Boolean> reverseWeightOpt);
+
+  /**
+   * Get the average geodesic distance of the graph
+   * @return the average geodesic distance of the graph
+   */
+  Double getAverageGeodesicDistance();
 }
