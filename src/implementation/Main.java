@@ -163,8 +163,8 @@ package implementation;
 import implementation.benchmark.Runner;
 import implementation.questions.Interviewer;
 import implementation.questions.Respondent;
+import implementation.share.Pair;
 import implementation.utils.GraphGenerator;
-// import implementation.utils.GraphOperations;
 import interfaces.IGraph;
 import java.io.IOException;
 import java.util.Optional;
@@ -177,21 +177,20 @@ public class Main {
     String inputCSVFile = "src/implementation/assets/raw.csv";
     String outputNETFile = "src/implementation/assets/graph.net";
 
-    generateGraphFromCSV(
-      inputCSVFile,
-      outputNETFile,
-      GraphTypes.LIST,
-      Optional.of(200)
-    );
+    Pair<GraphTypes, Optional<Integer>> typeAndLength = getGraphTypeAndLength();
+    GraphTypes type = typeAndLength.getFirst();
+    Optional<Integer> length = typeAndLength.getSecond();
+
+    generateGraphFromCSV(inputCSVFile, outputNETFile, type, length);
 
     IGraph graph = Graph.loadGraph(outputNETFile);
-    // Respondent respondent = new Respondent(graph);
+    Respondent respondent = new Respondent(graph);
     Runner benchmark = new Runner(graph);
 
     System.out.println("Number of nodes: " + graph.getSize());
     System.out.println("Number of edges: " + graph.getEdgeSize());
 
-    // Interviewer.runAllAndSaveAnswers(respondent);
+    Interviewer.runAllAndSaveAnswers(respondent);
     benchmark.executeAndSaveAllTests(5);
   }
 
@@ -221,5 +220,36 @@ public class Main {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  private static Pair<GraphTypes, Optional<Integer>> getGraphTypeAndLength() {
+    int optionOne = 0;
+    System.out.println("Choose an structure to generate the graph:");
+    System.out.println("1. Adjacency Matrix");
+    System.out.println("2. Adjacency List");
+
+    try {
+      optionOne = System.in.read();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    GraphTypes type = optionOne == 1 ? GraphTypes.MATRIX : GraphTypes.LIST;
+
+    int optionTwo = 0;
+
+    System.out.println(
+      "Choose a length for the graph (Number of lines that will be read in CSV):"
+    );
+
+    try {
+      optionTwo = System.in.read();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    Optional<Integer> length = Optional.of(optionTwo);
+
+    return new Pair<GraphTypes, Optional<Integer>>(type, length);
   }
 }

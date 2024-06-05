@@ -1,3 +1,3 @@
 # Degree Distribution
-Average: 0
-Standard Deviation: 0
+Average: 2
+Standard Deviation: 1

@@ -1,5 +1,4 @@
 import interfaces.IGraph;
-import java.util.Optional;
 import share.Graph;
 import utils.GraphTypes;
 
@@ -211,12 +210,7 @@ public class App {
   }
 
   public static void main(String[] args) throws Exception {
-    IGraph graph = Graph.loadGraph(
-      "src/assets/exemplesGraphs/ConnectedGraph.net"
-    );
-    System.out.println(graph);
-    System.out.println(
-      graph.getDijkstra("A", "B", Optional.of(true)).getPath()
-    );
+    IGraph graph = genGraph();
+    operations(graph);
   }
 }
