@@ -1,4 +1,5 @@
 import interfaces.IGraph;
+import java.util.Optional;
 import share.Graph;
 import utils.GraphTypes;
 
@@ -214,6 +215,8 @@ public class App {
       "src/assets/exemplesGraphs/ConnectedGraph.net"
     );
     System.out.println(graph);
-    System.out.println(graph.getBetweennessCentrality("A"));
+    System.out.println(
+      graph.getDijkstra("A", "B", Optional.of(true)).getPath()
+    );
   }
 }

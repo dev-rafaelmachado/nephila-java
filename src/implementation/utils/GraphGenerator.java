@@ -2,6 +2,7 @@ package implementation.utils;
 
 import java.io.*;
 import java.util.*;
+import utils.GraphTypes;
 
 public class GraphGenerator {
 
@@ -38,6 +39,12 @@ public class GraphGenerator {
     Map<String, Author> authors = new LinkedHashMap<>();
     Map<String, Edge> edges = new HashMap<>();
 
+    void addAuthor(String name, int index) {
+      if (!authors.containsKey(name)) {
+        authors.put(name, new Author(name, index));
+      }
+    }
+
     void addEdge(Author source, Author target) {
       String key = source.index + "-" + target.index;
       Edge edge = edges.get(key);
@@ -50,20 +57,75 @@ public class GraphGenerator {
     }
   }
 
-  public static void generateGraphFromCSV(String inputFile, String outputFile)
-    throws IOException {
+  public static void generateGraphFromCSV(
+    String inputFile,
+    String outputFile,
+    GraphTypes type
+  ) throws IOException {
+    generateGraphFromCSV(inputFile, outputFile, type, Optional.empty());
+  }
+
+  public static void generateGraphFromCSV(
+    String inputFile,
+    String outputFile,
+    GraphTypes type,
+    Optional<Integer> length
+  ) throws IOException {
     Graph graph = new Graph();
+    List<String[]> data = readCSV(inputFile, length);
+    insertVertices(data, graph);
+    insertEdges(data, graph);
+
+    writeGraphToFile(graph, outputFile, type);
+  }
+
+  public static List<String[]> readCSV(String inputFile) throws IOException {
+    return readCSV(inputFile, Optional.empty());
+  }
+
+  public static List<String[]> readCSV(
+    String inputFile,
+    Optional<Integer> length
+  ) throws IOException {
+    List<String[]> data = new ArrayList<>();
     BufferedReader reader = new BufferedReader(new FileReader(inputFile));
     String line = reader.readLine(); // skip header
-    int index = 0;
 
+    int count = 0;
     while ((line = reader.readLine()) != null) {
+      if (length.isPresent() && count >= length.get()) {
+        break;
+      }
       String[] fields = line.split(",");
+      data.add(fields);
+      count++;
+    }
+    reader.close();
+    return data;
+  }
+
+  public static void insertVertices(List<String[]> data, Graph graph) {
+    int index = 0;
+    for (String[] fields : data) {
+      for (int i = 2; i < fields.length; i++) {
+        if (fields[i].charAt(0) == ' ') fields[i] = fields[i].substring(1);
+        String rawName =
+          fields[i].replaceAll("[\\[\\]\\(\\)\\.,'\"]", "").replace(" ", "_");
+        if (!graph.authors.containsKey(rawName)) {
+          graph.addAuthor(rawName, index++);
+        }
+      }
+    }
+  }
+
+  public static void insertEdges(List<String[]> data, Graph graph) {
+    for (String[] fields : data) {
       List<String> names = new ArrayList<>();
       for (int i = 2; i < fields.length; i++) {
-        String rawName = fields[i];
-        rawName = rawName.replaceAll("[\\[\\]\\(\\)\\.,'\"]", "");
-        rawName = rawName.replace(" ", "_");
+        // if string has a blank space in the index 0, remove it
+        if (fields[i].charAt(0) == ' ') fields[i] = fields[i].substring(1);
+        String rawName =
+          fields[i].replaceAll("[\\[\\]\\(\\)\\.,'\"]", "").replace(" ", "_");
         names.add(rawName);
       }
 
@@ -71,28 +133,28 @@ public class GraphGenerator {
 
       for (int i = 0; i < names.size(); i++) {
         Author author = graph.authors.get(names.get(i));
-        if (author == null) {
-          author = new Author(names.get(i), index++);
-          graph.authors.put(names.get(i), author);
-        }
         for (int j = i + 1; j < names.size(); j++) {
           Author coauthor = graph.authors.get(names.get(j));
-          if (coauthor == null) {
-            coauthor = new Author(names.get(j), index++);
-            graph.authors.put(names.get(j), coauthor);
-          }
           graph.addEdge(author, coauthor);
         }
       }
     }
-    reader.close();
+  }
 
+  private static void writeGraphToFile(
+    Graph graph,
+    String outputFile,
+    GraphTypes type
+  ) throws IOException {
     BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
     writer.write(
-      "% directed=false\n% weighted=true\n% representation=list\n*Vertices " +
+      "% directed=false\n% weighted=true\n% representation=" +
+      type.toString().toLowerCase() +
+      "\n*Vertices " +
       graph.authors.size() +
       "\n"
     );
+
     int count = 0;
     for (Author author : graph.authors.values()) {
       writer.write(count + " " + author.name + "\n");
@@ -106,13 +168,5 @@ public class GraphGenerator {
     }
     System.out.println("Graph generated successfully!");
     writer.close();
-  }
-
-  public static void main(String[] args) {
-    try {
-      generateGraphFromCSV("input.csv", "output.net");
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
   }
 }

@@ -1,0 +1,3 @@
+# Betweenness Centrality
+Average: 12
+Standard Deviation: 2

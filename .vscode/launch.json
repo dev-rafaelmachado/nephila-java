@@ -9,6 +9,13 @@
             "name": "Main",
             "request": "launch",
             "mainClass": "implementation.Main",
+            "projectName": "nephila-java_951dcfa1"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "implementation.Main",
             "projectName": "nephila-java_90b7b341"
         },
         {

@@ -24,6 +24,7 @@ import share.PathWithWeight;
 import share.Queue.Queue;
 import share.Tree.BinaryTree;
 import share.Tree.BinaryTreeNode;
+import utils.GraphTypes;
 
 public class AdjacencyList implements IGraph {
 
@@ -41,6 +42,10 @@ public class AdjacencyList implements IGraph {
 
   public int getSize() {
     return nodes.size();
+  }
+
+  public GraphTypes getType() {
+    return GraphTypes.LIST;
   }
 
   public int getEdgeSize() {
@@ -96,7 +101,7 @@ public class AdjacencyList implements IGraph {
       nodes.add(new Node(label));
       return;
     }
-    System.out.println("Node " + label + " already exists");
+    // System.out.println("Node " + label + " already exists");
   }
 
   public void addEdge(String from, String to, int weight) {
@@ -428,7 +433,10 @@ public class AdjacencyList implements IGraph {
   private Node getFarthestNode(List<Node> unvisitedNodes) {
     Node farthestNode = unvisitedNodes.get(0);
     for (Node node : unvisitedNodes) {
-      if (node.getDistance() > farthestNode.getDistance()) {
+      if (
+        node.getDistance() != Integer.MAX_VALUE &&
+        node.getDistance() > farthestNode.getDistance()
+      ) {
         farthestNode = node;
       }
     }
@@ -589,6 +597,8 @@ public class AdjacencyList implements IGraph {
         degreeDistribution.getOrDefault(degree, 0) + 1
       );
     }
+
+    if (filename == "") return;
 
     List<Integer> xData = new ArrayList<>(degreeDistribution.keySet());
     List<Integer> yData = new ArrayList<>(degreeDistribution.values());
@@ -780,7 +790,6 @@ public class AdjacencyList implements IGraph {
             reverseWeightOpt
           )
             .getPath();
-
           if (!shortestPath.isEmpty()) {
             if (shortestPath.contains(label)) {
               betweennessCentrality++;
@@ -801,11 +810,18 @@ public class AdjacencyList implements IGraph {
     Optional<Boolean> reverseWeightOpt
   ) {
     Map<String, Double> betweennessCentrality = new HashMap<>();
+
+    int total = nodes.size();
+    int i = 0;
     for (Node node : nodes) {
       betweennessCentrality.put(
         node.getLabel(),
         getBetweennessCentrality(node.getLabel(), reverseWeightOpt)
       );
+      System.out.println(
+        "Progress: " + (int) ((i / (double) total) * 100) + "%"
+      );
+      i++;
     }
     return betweennessCentrality;
   }
@@ -947,7 +963,6 @@ public class AdjacencyList implements IGraph {
             reverseWeightOpt
           )
             .getPath();
-
           if (!shortestPath.isEmpty()) {
             if (shortestPath.contains(from) && shortestPath.contains(to)) {
               edgeBetweenness++;
@@ -968,7 +983,10 @@ public class AdjacencyList implements IGraph {
     Optional<Boolean> reverseWeightOpt
   ) {
     Map<ExternalEdge, Double> edgeBetweenness = new HashMap<>();
-    Set<ExternalEdge> processedEdges = new HashSet<>();
+    Set<Node> processedNodes = new HashSet<>();
+
+    int total = nodes.size();
+    int i = 0;
     for (Node node : nodes) {
       for (Edge edge : node.getNeighbors()) {
         ExternalEdge externalEdge = new ExternalEdge(
@@ -976,16 +994,19 @@ public class AdjacencyList implements IGraph {
           edge.getNode(),
           edge.getWeight()
         );
-        if (!processedEdges.contains(externalEdge)) {
+        if (!processedNodes.contains(edge.getNode())) {
           double betweenness = getEdgeBetweenness(
             node.getLabel(),
             edge.getNode().getLabel(),
             reverseWeightOpt
           );
           edgeBetweenness.put(externalEdge, betweenness);
-          processedEdges.add(externalEdge);
+          processedNodes.add(node);
+          processedNodes.add(edge.getNode());
         }
       }
+      System.out.println("Progress: " + (int) ((double) i / total * 100) + "%");
+      i++;
     }
 
     return edgeBetweenness;
@@ -1079,5 +1100,17 @@ public class AdjacencyList implements IGraph {
       return sum / (count * (count - 1));
     }
     return sum / (count * (count - 1) / 2);
+  }
+
+  public List<ExternalEdge> getWeightedOfAllEdges() {
+    List<ExternalEdge> weightedEdges = new ArrayList<>();
+    for (Node node : nodes) {
+      for (Edge edge : node.getNeighbors()) {
+        weightedEdges.add(
+          new ExternalEdge(node, edge.getNode(), edge.getWeight())
+        );
+      }
+    }
+    return weightedEdges;
   }
 }

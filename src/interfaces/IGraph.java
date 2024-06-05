@@ -8,6 +8,7 @@ import share.ExternalEdge;
 import share.PathWithWeight;
 import share.Tree.BinaryTree;
 import structures.AdjacencyMatrix;
+import utils.GraphTypes;
 
 /**
  * This interface represents a graph data structure.
@@ -17,6 +18,13 @@ public interface IGraph {
    * @return Get the length of nodes list of the graph.
    */
   public int getSize();
+
+  /**
+   * @return Get the length of edges list of the graph.
+   */
+  public int getEdgeSize();
+
+  public GraphTypes getType();
 
   /**
    * Adds a node to the graph with the specified label.
@@ -420,4 +428,6 @@ public interface IGraph {
    * @return the average geodesic distance of the graph
    */
   Double getAverageGeodesicDistance();
+
+  public List<ExternalEdge> getWeightedOfAllEdges();
 }

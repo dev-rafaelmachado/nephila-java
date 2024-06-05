@@ -1,75 +1,79 @@
 package share;
 
+import interfaces.INode;
 import java.util.ArrayList;
 import java.util.List;
-import interfaces.INode;
 
 public class Node implements INode {
-    private String label;
-    private List<Edge> neighbors;
-    private int distance;
-    private List<Node> shortestPath;
 
-    public Node(String label) {
-        this.label = label;
-        this.neighbors = new ArrayList<>();
-    }
+  private String label;
+  private List<Edge> neighbors;
+  private int distance;
+  private List<Node> shortestPath;
 
-    public String getLabel() {
-        return label;
-    }
+  public Node(String label) {
+    this.label = label;
+    this.neighbors = new ArrayList<>();
+  }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
+  public String getLabel() {
+    return label;
+  }
 
-    public void addNeighbor(Node node, int weight) {
-        neighbors.add(new Edge(node, weight));
-    }
+  public void setLabel(String label) {
+    this.label = label;
+  }
 
-    public void updateNeighbor(Node node, int weight) {
-        for (Edge edge : neighbors) {
-            if (edge.getNode().equals(node)) {
-                edge.setWeight(weight);
-                break;
-            }
-        }
-    }
+  public void addNeighbor(Node node, int weight) {
+    neighbors.add(new Edge(node, weight));
+  }
 
-    public void removeNeighbor(Node node) {
-        for (Edge edge : neighbors) {
-            if (edge.getNode().equals(node)) {
-                neighbors.remove(edge);
-                break;
-            }
-        }
+  public void updateNeighbor(Node node, int weight) {
+    for (Edge edge : neighbors) {
+      if (edge.getNode().equals(node)) {
+        edge.setWeight(weight);
+        return;
+      }
     }
 
-    public boolean isNeighbor(Node node) {
-        for (Edge edge : neighbors) {
-            if (edge.getNode().equals(node)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    addNeighbor(node, weight);
+  }
 
-    public List<Edge> getNeighbors() {
-        return neighbors;
+  public void removeNeighbor(Node node) {
+    for (Edge edge : neighbors) {
+      if (edge.getNode().equals(node)) {
+        neighbors.remove(edge);
+        break;
+      }
     }
-    public int getDistance() {
-        return distance;
-    }
+  }
 
-    public void setDistance(int distance) {
-        this.distance = distance;
+  public boolean isNeighbor(Node node) {
+    for (Edge edge : neighbors) {
+      if (edge.getNode().equals(node)) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    public List<Node> getShortestPath() {
-        return shortestPath;
-    }
+  public List<Edge> getNeighbors() {
+    return neighbors;
+  }
 
-    public void setShortestPath(List<Node> shortestPath) {
-        this.shortestPath = shortestPath;
-    }
+  public int getDistance() {
+    return distance;
+  }
+
+  public void setDistance(int distance) {
+    this.distance = distance;
+  }
+
+  public List<Node> getShortestPath() {
+    return shortestPath;
+  }
+
+  public void setShortestPath(List<Node> shortestPath) {
+    this.shortestPath = shortestPath;
+  }
 }

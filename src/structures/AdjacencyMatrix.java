@@ -24,6 +24,7 @@ import share.PathWithWeight;
 import share.Queue.Queue;
 import share.Tree.BinaryTree;
 import share.Tree.BinaryTreeNode;
+import utils.GraphTypes;
 
 public class AdjacencyMatrix implements IGraph {
 
@@ -43,6 +44,10 @@ public class AdjacencyMatrix implements IGraph {
 
   public int getSize() {
     return nodes.size();
+  }
+
+  public GraphTypes getType() {
+    return GraphTypes.MATRIX;
   }
 
   public int getEdgeSize() {
@@ -100,7 +105,7 @@ public class AdjacencyMatrix implements IGraph {
       }
       return;
     }
-    System.out.println("Node" + label + " already exists");
+    // System.out.println("Node" + label + " already exists");
   }
 
   public void addEdge(String from, String to, int weight) {
@@ -439,7 +444,10 @@ public class AdjacencyMatrix implements IGraph {
   private Node getFarthestNode(List<Node> unvisitedNodes) {
     Node farthestNode = unvisitedNodes.get(0);
     for (Node node : unvisitedNodes) {
-      if (node.getDistance() > farthestNode.getDistance()) {
+      if (
+        node.getDistance() != Integer.MAX_VALUE &&
+        node.getDistance() > farthestNode.getDistance()
+      ) {
         farthestNode = node;
       }
     }
@@ -598,6 +606,8 @@ public class AdjacencyMatrix implements IGraph {
       );
     }
 
+    if (filename == "") return;
+
     List<Integer> xData = new ArrayList<>(degreeDistribution.keySet());
     List<Integer> yData = new ArrayList<>(degreeDistribution.values());
 
@@ -656,7 +666,7 @@ public class AdjacencyMatrix implements IGraph {
         AdjacencyList component = new AdjacencyList(isWeighted, isDirected);
         for (Node n : connectedComponent) {
           component.addNode(n.getLabel());
-          for (Edge edge : n.getNeighbors()) {
+          for (Edge edge : getNeighbors(n.getLabel())) {
             component.updateEdge(
               n.getLabel(),
               edge.getNode().getLabel(),
@@ -730,7 +740,7 @@ public class AdjacencyMatrix implements IGraph {
         AdjacencyList component = new AdjacencyList(isWeighted, isDirected);
         for (Node n : stronglyConnectedComponent) {
           component.addNode(n.getLabel());
-          for (Edge edge : n.getNeighbors()) {
+          for (Edge edge : getNeighbors(n.getLabel())) {
             component.updateEdge(
               n.getLabel(),
               edge.getNode().getLabel(),
@@ -784,7 +794,6 @@ public class AdjacencyMatrix implements IGraph {
             reverseWeightOpt
           )
             .getPath();
-
           if (!shortestPath.isEmpty()) {
             if (shortestPath.contains(label)) {
               betweennessCentrality++;
@@ -805,11 +814,18 @@ public class AdjacencyMatrix implements IGraph {
     Optional<Boolean> reverseWeightOpt
   ) {
     Map<String, Double> betweennessCentrality = new HashMap<>();
+
+    int total = nodes.size();
+    int i = 0;
     for (Node node : nodes) {
       betweennessCentrality.put(
         node.getLabel(),
         getBetweennessCentrality(node.getLabel(), reverseWeightOpt)
       );
+      System.out.println(
+        "Progress: " + (int) ((i / (double) total) * 100) + "%"
+      );
+      i++;
     }
     return betweennessCentrality;
   }
@@ -951,7 +967,6 @@ public class AdjacencyMatrix implements IGraph {
             reverseWeightOpt
           )
             .getPath();
-
           if (!shortestPath.isEmpty()) {
             if (shortestPath.contains(from) && shortestPath.contains(to)) {
               edgeBetweenness++;
@@ -972,32 +987,30 @@ public class AdjacencyMatrix implements IGraph {
     Optional<Boolean> reverseWeightOpt
   ) {
     Map<ExternalEdge, Double> edgeBetweenness = new HashMap<>();
-    Set<ExternalEdge> processedEdges = new HashSet<>();
+    Set<Node> processedNodes = new HashSet<>();
+
+    int total = nodes.size();
+    int i = 0;
     for (Node node : nodes) {
-      System.out.println(node.getLabel() + " " + getNeighbors(node.getLabel()));
       for (Edge edge : getNeighbors(node.getLabel())) {
         ExternalEdge externalEdge = new ExternalEdge(
           node,
           edge.getNode(),
           edge.getWeight()
         );
-        if (!processedEdges.contains(externalEdge)) {
+        if (!processedNodes.contains(edge.getNode())) {
           double betweenness = getEdgeBetweenness(
             node.getLabel(),
             edge.getNode().getLabel(),
             reverseWeightOpt
           );
-          System.out.println(
-            node.getLabel() +
-            " " +
-            edge.getNode().getLabel() +
-            " " +
-            betweenness
-          );
           edgeBetweenness.put(externalEdge, betweenness);
-          processedEdges.add(externalEdge);
+          processedNodes.add(node);
+          processedNodes.add(edge.getNode());
         }
       }
+      System.out.println("Progress: " + (int) ((double) i / total * 100) + "%");
+      i++;
     }
 
     return edgeBetweenness;
@@ -1019,7 +1032,7 @@ public class AdjacencyMatrix implements IGraph {
 
     IGraph copyGraph = new AdjacencyList(isWeighted, isDirected);
     for (Node node : nodes) {
-      for (Edge edge : node.getNeighbors()) {
+      for (Edge edge : getNeighbors(node.getLabel())) {
         copyGraph.updateEdge(
           node.getLabel(),
           edge.getNode().getLabel(),
@@ -1091,5 +1104,17 @@ public class AdjacencyMatrix implements IGraph {
       return sum / (count * (count - 1));
     }
     return sum / (count * (count - 1) / 2);
+  }
+
+  public List<ExternalEdge> getWeightedOfAllEdges() {
+    List<ExternalEdge> weightedEdges = new ArrayList<>();
+    for (Node node : nodes) {
+      for (Edge edge : getNeighbors(node.getLabel())) {
+        weightedEdges.add(
+          new ExternalEdge(node, edge.getNode(), edge.getWeight())
+        );
+      }
+    }
+    return weightedEdges;
   }
 }
