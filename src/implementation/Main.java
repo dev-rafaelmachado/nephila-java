@@ -177,20 +177,23 @@ public class Main {
     String inputCSVFile = "src/implementation/assets/raw.csv";
     String outputNETFile = "src/implementation/assets/graph.net";
 
-    Pair<GraphTypes, Optional<Integer>> typeAndLength = getGraphTypeAndLength();
-    GraphTypes type = typeAndLength.getFirst();
-    Optional<Integer> length = typeAndLength.getSecond();
+    // Pair<GraphTypes, Optional<Integer>> typeAndLength = getGraphTypeAndLength();
+    // GraphTypes type = typeAndLength.getFirst();
+    // Optional<Integer> length = typeAndLength.getSecond();
+
+    GraphTypes type = GraphTypes.LIST;
+    Optional<Integer> length = Optional.of(500);
 
     generateGraphFromCSV(inputCSVFile, outputNETFile, type, length);
 
     IGraph graph = Graph.loadGraph(outputNETFile);
-    Respondent respondent = new Respondent(graph);
+    // Respondent respondent = new Respondent(graph);
     Runner benchmark = new Runner(graph);
 
     System.out.println("Number of nodes: " + graph.getSize());
     System.out.println("Number of edges: " + graph.getEdgeSize());
 
-    Interviewer.runAllAndSaveAnswers(respondent);
+    // Interviewer.runAllAndSaveAnswers(respondent);
     benchmark.executeAndSaveAllTests(5);
   }
 
@@ -242,10 +245,12 @@ public class Main {
       "Choose a length for the graph (Number of lines that will be read in CSV):"
     );
 
-    try {
-      optionTwo = System.in.read();
-    } catch (IOException e) {
-      e.printStackTrace();
+    while (optionTwo == 0) {
+      try {
+        optionTwo = System.in.read();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     Optional<Integer> length = Optional.of(optionTwo);

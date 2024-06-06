@@ -212,10 +212,10 @@ public class Runner {
       times,
       this::runDegreeCentralityTest
     );
-    Pair<Long, Long> betweennessCentrality = getAverageTimeAndStandardDeviation(
-      times,
-      this::runBetweennessCentralityTest
-    );
+    // Pair<Long, Long> betweennessCentrality = getAverageTimeAndStandardDeviation(
+    //   times,
+    //   this::runBetweennessCentralityTest
+    // );
     Pair<Long, Long> closenessCentrality = getAverageTimeAndStandardDeviation(
       times,
       this::runClosenessCentralityTest
@@ -236,10 +236,10 @@ public class Runner {
       times,
       this::runGeodesicDistanceTest
     );
-    Pair<Long, Long> communitiesIdentification = getAverageTimeAndStandardDeviation(
-      times,
-      this::runCommunitiesIdentificationTest
-    );
+    // Pair<Long, Long> communitiesIdentification = getAverageTimeAndStandardDeviation(
+    //   times,
+    //   this::runCommunitiesIdentificationTest
+    // );
 
     saveOnTxt(
       "Insert All Nodes",
@@ -273,13 +273,13 @@ public class Runner {
       "/4_degreeCentrality.txt"
     );
 
-    saveOnTxt(
-      "Betweenness Centrality",
-      betweennessCentrality,
-      "src/implementation/benchmark/result/" +
-      graph.getType().toString().toLowerCase() +
-      "/5_betweennessCentrality.txt"
-    );
+    // saveOnTxt(
+    //   "Betweenness Centrality",
+    //   betweennessCentrality,
+    //   "src/implementation/benchmark/result/" +
+    //   graph.getType().toString().toLowerCase() +
+    //   "/5_betweennessCentrality.txt"
+    // );
 
     saveOnTxt(
       "Closeness Centrality",
@@ -321,13 +321,13 @@ public class Runner {
       "/10_geodesicDistance.txt"
     );
 
-    saveOnTxt(
-      "Communities Identification",
-      communitiesIdentification,
-      "src/implementation/benchmark/result/" +
-      graph.getType().toString().toLowerCase() +
-      "/11_communitiesIdentification.txt"
-    );
+    // saveOnTxt(
+    //   "Communities Identification",
+    //   communitiesIdentification,
+    //   "src/implementation/benchmark/result/" +
+    //   graph.getType().toString().toLowerCase() +
+    //   "/11_communitiesIdentification.txt"
+    // );
 
     System.out.println("All tests executed and saved successfully!");
   }

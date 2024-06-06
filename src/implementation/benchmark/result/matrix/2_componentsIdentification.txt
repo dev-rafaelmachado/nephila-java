@@ -1,0 +1,3 @@
+# Components Identification
+Average: 10
+Standard Deviation: 5

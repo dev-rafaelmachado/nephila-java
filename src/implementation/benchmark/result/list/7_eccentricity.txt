@@ -1,3 +1,3 @@
 # Eccentricity
-Average: 0
+Average: 3
 Standard Deviation: 0

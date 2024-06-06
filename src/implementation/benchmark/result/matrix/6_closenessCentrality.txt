@@ -1,0 +1,3 @@
+# Closeness Centrality
+Average: 710
+Standard Deviation: 102

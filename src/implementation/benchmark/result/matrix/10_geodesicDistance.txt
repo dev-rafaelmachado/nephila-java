@@ -1,0 +1,3 @@
+# Geodesic Distance
+Average: 7544
+Standard Deviation: 432

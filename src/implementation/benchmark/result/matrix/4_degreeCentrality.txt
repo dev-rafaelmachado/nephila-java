@@ -1,0 +1,3 @@
+# Degree Centrality
+Average: 3
+Standard Deviation: 2
